@@ -2,7 +2,7 @@
 
 A modern multi-hotel booking platform built as a portfolio project — search, filter, book, and manage hotel stays across 5 destinations.
 
-**Live Demo:** [add your Vercel URL here after deploying]
+**Live Demo:**
 
 ## Screenshots
 

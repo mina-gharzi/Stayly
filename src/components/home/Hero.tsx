@@ -1,5 +1,5 @@
 // src/components/home/Hero.tsx
-import heroImage from "@/assets/hero.jpg";
+import heroImage from "@/assets/hero.webp";
 import { SearchBox } from "./SearchBox";
 
 export function Hero() {

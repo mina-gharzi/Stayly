@@ -19,32 +19,34 @@ export function FeaturedHotels() {
               Featured
             </p>
             <h2 className="mt-2 text-2xl font-bold text-primary-600 sm:text-3xl">
-              هتل های ویژه
+              هتلهای ویژه
             </h2>
           </div>
 
-          {/* گرید کارتها */}
+          {/* گرید کارتها — موبایل ۳ تا، از sm به بالا ۶ تا */}
           <div className="mt-8 grid grid-cols-1 gap-5 sm:mt-10 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
-            {featured.map((hotel) => (
-              <HotelCard key={hotel.id} hotel={hotel} />
+            {featured.map((hotel, index) => (
+              <div
+                key={hotel.id}
+                className={`h-full ${index >= 3 ? "hidden sm:block" : ""}`}
+              >
+                <HotelCard hotel={hotel} />
+              </div>
             ))}
+          </div>
 
-            {/* کارت CTA — «مشاهده همه» (موبایل و تبلت) */}
+          {/* دکمه مشاهده همه — موبایل و تبلت */}
+          <div className="mt-8 flex justify-center lg:hidden">
             <Link
               to="/hotels"
-              className="group relative flex aspect-4/3 flex-col items-center justify-center gap-2 overflow-hidden rounded-lg bg-linear-to-br from-primary-600 to-primary-700 p-4 text-center text-white shadow-card transition-shadow hover:shadow-elevated sm:col-span-2 sm:aspect-auto lg:hidden"
+              className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-card transition-colors hover:bg-primary-700"
             >
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.25em] text-white/70">
-                Featured
-              </span>
-              <span className="text-lg font-bold">مشاهده همه</span>
-              <span className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 group-hover:scale-110">
-                <ArrowLeft className="h-4 w-4" />
-              </span>
+              مشاهده همه هتلها
+              <ArrowLeft className="h-4 w-4" />
             </Link>
           </div>
 
-          {/* دکمه مشاهده همه — زیر کارتها، فقط دسکتاپ */}
+          {/* لینک مشاهده همه — فقط دسکتاپ */}
           <div className="mt-10 hidden justify-center lg:flex">
             <Link
               to="/hotels"

@@ -26,22 +26,30 @@ export function HotelDetails() {
   if (isLoading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <Skeleton className="h-64 w-full rounded-lg" />
-        <Skeleton className="mt-4 h-8 w-1/2" />
-        <Skeleton className="mt-2 h-4 w-1/3" />
+        <Skeleton className="h-100 w-full rounded-2xl" />
+        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12">
+          <div className="flex flex-col gap-6 lg:col-span-8">
+            <Skeleton className="h-10 w-2/3" />
+            <Skeleton className="h-6 w-1/3" />
+            <Skeleton className="mt-4 h-32 w-full" />
+          </div>
+          <Skeleton className="h-64 w-full rounded-2xl lg:col-span-4" />
+        </div>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 py-24 text-center">
-        <AlertTriangle className="h-8 w-8 text-error-500" aria-hidden />
-        <p className="font-medium text-neutral-900">مشکلی پیش آمد</p>
-        <p className="text-sm text-neutral-600">
-          بارگذاری اطلاعات هتل با خطا مواجه شد.
-        </p>
-        <Button variant="outline" onClick={() => refetch()}>
+      <div className="mx-auto flex max-w-md flex-col items-center gap-4 px-4 py-24 text-center">
+        <AlertTriangle className="h-10 w-10 text-neutral-400" aria-hidden />
+        <div>
+          <p className="text-lg font-medium text-neutral-900">مشکلی پیش آمد</p>
+          <p className="mt-1 text-sm text-neutral-600">
+            امکان دریافت اطلاعات هتل وجود ندارد.
+          </p>
+        </div>
+        <Button variant="outline" className="mt-2" onClick={() => refetch()}>
           تلاش مجدد
         </Button>
       </div>
@@ -50,8 +58,8 @@ export function HotelDetails() {
 
   if (!hotel) {
     return (
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 py-24 text-center">
-        <p className="font-medium text-neutral-900">هتل یافت نشد</p>
+      <div className="mx-auto flex max-w-md flex-col items-center gap-4 px-4 py-24 text-center">
+        <p className="text-lg font-medium text-neutral-900">هتل یافت نشد</p>
         <Button variant="outline" onClick={() => navigate("/hotels")}>
           بازگشت به جستجو
         </Button>
@@ -65,77 +73,111 @@ export function HotelDetails() {
     <div className="mx-auto max-w-7xl px-4 py-8">
       <ImageGallery images={hotel.images} />
 
-      <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* ستون اصلی محتوا */}
-        <div className="lg:col-span-2">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-bold text-neutral-900">
-                {hotel.name}
-              </h1>
-              <p className="mt-1 flex items-center gap-1 text-sm text-neutral-600">
-                <MapPin className="h-4 w-4" aria-hidden />
-                {hotel.address}, {city?.name}
-              </p>
-              <div className="mt-1 flex items-center gap-1">
-                {Array.from({ length: hotel.starRating }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-4 w-4 fill-warning-500 text-warning-500"
-                    aria-hidden
-                  />
-                ))}
+      <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-12">
+        {/* ══════ Main Content ══════ */}
+        <div className="flex flex-col gap-10 lg:col-span-8">
+          {/* Header */}
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl">
+                  {hotel.name}
+                </h1>
+                <div className="flex items-center pt-1">
+                  {Array.from({ length: hotel.starRating }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className="h-4 w-4 fill-warning-400 text-warning-400"
+                      aria-hidden
+                    />
+                  ))}
+                </div>
               </div>
+              <p className="flex items-center gap-1.5 text-neutral-600">
+                <MapPin className="h-4 w-4 shrink-0" aria-hidden />
+                {city?.name}، {hotel.address}
+              </p>
             </div>
-            <div className="flex shrink-0 flex-col items-center rounded-md bg-primary-700 px-3 py-2 text-white">
-              <span className="tabular-nums text-lg font-bold">
+
+            {/* Rating */}
+            <div className="flex shrink-0 items-center gap-3 rounded-lg border border-neutral-200 px-4 py-2">
+              <div className="flex flex-col items-end">
+                <span className="text-sm font-medium text-neutral-900">
+                  عالی
+                </span>
+                <span className="text-xs text-neutral-500">
+                  {hotel.reviewCount} نظر
+                </span>
+              </div>
+              <span className="flex h-10 w-10 items-center justify-center rounded bg-primary-700 tabular-nums text-lg font-bold text-white">
                 {hotel.guestRating.toFixed(1)}
               </span>
-              <span className="text-xs">{hotel.reviewCount} نظر</span>
             </div>
           </div>
 
-          <p className="mt-6 leading-7 text-neutral-700">{hotel.description}</p>
+          <div className="h-px bg-neutral-200" />
 
-          <div className="mt-8">
-            <h2 className="mb-4 text-lg font-semibold text-neutral-900">
-              امکانات
-            </h2>
-            <AmenitiesList amenityIds={hotel.amenityIds} />
-          </div>
+          {/* Description */}
+          <section>
+            <h2 className="text-xl font-bold text-neutral-900">درباره هتل</h2>
+            <p className="mt-4 text-neutral-700 leading-loose">
+              {hotel.description}
+            </p>
+          </section>
 
-          <div className="mt-8 grid grid-cols-2 gap-4 rounded-lg border border-neutral-200 p-4 sm:w-fit sm:grid-cols-3">
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-neutral-600" aria-hidden />
-              <div>
-                <p className="text-neutral-600">ورود</p>
-                <p className="ltr-content font-medium text-neutral-900">
-                  {hotel.policy.checkInTime}
+          {/* Amenities */}
+          <section>
+            <h2 className="text-xl font-bold text-neutral-900">امکانات</h2>
+            <div className="mt-6">
+              <AmenitiesList amenityIds={hotel.amenityIds} />
+            </div>
+          </section>
+
+          {/* Policies */}
+          <section>
+            <h2 className="text-xl font-bold text-neutral-900">قوانین هتل</h2>
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="flex items-start gap-3 rounded-xl border border-neutral-200 p-4">
+                <Clock
+                  className="h-5 w-5 shrink-0 text-neutral-500"
+                  aria-hidden
+                />
+                <div>
+                  <p className="text-sm text-neutral-500">ساعت ورود</p>
+                  <p className="ltr-content mt-0.5 font-medium text-neutral-900">
+                    {hotel.policy.checkInTime}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 rounded-xl border border-neutral-200 p-4">
+                <Clock
+                  className="h-5 w-5 shrink-0 text-neutral-500"
+                  aria-hidden
+                />
+                <div>
+                  <p className="text-sm text-neutral-500">ساعت خروج</p>
+                  <p className="ltr-content mt-0.5 font-medium text-neutral-900">
+                    {hotel.policy.checkOutTime}
+                  </p>
+                </div>
+              </div>
+              <div className="rounded-xl border border-neutral-200 p-4 sm:col-span-2 lg:col-span-3">
+                <p className="text-sm text-neutral-500">قوانین کنسلی</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-neutral-800">
+                  {hotel.policy.cancellation}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-neutral-600" aria-hidden />
-              <div>
-                <p className="text-neutral-600">خروج</p>
-                <p className="ltr-content font-medium text-neutral-900">
-                  {hotel.policy.checkOutTime}
-                </p>
-              </div>
-            </div>
-            <div className="col-span-2 text-sm sm:col-span-1">
-              <p className="text-neutral-600">قوانین لغو</p>
-              <p className="font-medium text-neutral-900">
-                {hotel.policy.cancellation}
-              </p>
-            </div>
-          </div>
+          </section>
 
-          <div id="rooms-anchor" className="mt-8">
-            <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+          <div className="h-px bg-neutral-200" />
+
+          {/* Rooms */}
+          <section id="rooms-anchor" className="scroll-mt-24">
+            <h2 className="text-xl font-bold text-neutral-900">
               اتاق‌های موجود
             </h2>
-            <div className="flex flex-col gap-4">
+            <div className="mt-6 flex flex-col gap-4">
               {rooms.map((room) => (
                 <RoomCard
                   key={room.id}
@@ -144,41 +186,63 @@ export function HotelDetails() {
                 />
               ))}
             </div>
-          </div>
+          </section>
 
-          <div className="mt-8">
-            <h2 className="mb-4 text-lg font-semibold text-neutral-900">
-              نظرات مهمانان
+          {/* Reviews */}
+          <section>
+            <h2 className="text-xl font-bold text-neutral-900">
+              نظرات کاربران
             </h2>
-            <ReviewsSection reviews={reviews} guestRating={hotel.guestRating} />
-          </div>
+            <div className="mt-6">
+              <ReviewsSection
+                reviews={reviews}
+                guestRating={hotel.guestRating}
+              />
+            </div>
+          </section>
         </div>
 
-        {/* ستون کناری (Sidebar): باکس قیمت + دکمه رزرو + نقشه */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-20 flex flex-col gap-4">
-            <div className="rounded-lg border border-neutral-200 p-4">
-              <p className="text-sm text-neutral-600">شروع قیمت از</p>
-              <p className="tabular-price text-2xl font-bold text-neutral-900">
-                {formatToman(hotel.pricePerNightFrom)}
-              </p>
-              <p className="text-xs text-neutral-600">هر شب</p>
+        {/* ══════ Sidebar ══════ */}
+        <div className="lg:col-span-4">
+          <div className="sticky top-24 flex flex-col gap-6">
+            {/* Booking Card */}
+            <div className="rounded-2xl border border-neutral-200 bg-white p-6">
+              <p className="text-sm text-neutral-500">شروع قیمت از</p>
+              <div className="mt-1 flex items-baseline gap-1">
+                <span className="tabular-price text-2xl font-bold text-neutral-900">
+                  {formatToman(hotel.pricePerNightFrom)}
+                </span>
+                <span className="text-sm text-neutral-500">تومان</span>
+              </div>
+
               <Button
-                className="mt-4 w-full"
+                size="lg"
+                className="mt-6 w-full font-medium"
                 onClick={() =>
                   document
                     .getElementById("rooms-anchor")
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                رزرو کنید
+                انتخاب اتاق
               </Button>
             </div>
-            <LocationPreview
-              latitude={hotel.latitude}
-              longitude={hotel.longitude}
-              address={hotel.address}
-            />
+
+            {/* Map Card */}
+            <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+              <div className="border-b border-neutral-100 p-4">
+                <h3 className="font-medium text-neutral-900">
+                  موقعیت روی نقشه
+                </h3>
+              </div>
+              <div className="p-4">
+                <LocationPreview
+                  latitude={hotel.latitude}
+                  longitude={hotel.longitude}
+                  address={hotel.address}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

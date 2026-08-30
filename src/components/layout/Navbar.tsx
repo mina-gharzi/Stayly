@@ -113,7 +113,7 @@ export function Navbar() {
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute end-0 top-full z-10 mt-2 w-52 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-elevated">
+                  <div className="absolute inset-e-0 top-full z-10 mt-2 w-52 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-elevated">
                     <div className="border-b border-neutral-100 px-4 py-3">
                       <p className="text-sm font-semibold text-neutral-900">
                         {user.firstName} {user.lastName}
@@ -179,7 +179,7 @@ export function Navbar() {
 
       {/* دراور موبایل — از راست به چپ */}
       <aside
-        className={`fixed inset-y-0 start-0 z-50 flex w-72 max-w-[85%] flex-col bg-white shadow-elevated transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed inset-y-0 inset-s-0 z-50 flex w-72 max-w-[85%] flex-col bg-white shadow-elevated transition-transform duration-300 ease-in-out md:hidden ${
           mobileOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

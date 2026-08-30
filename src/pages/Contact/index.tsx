@@ -13,7 +13,7 @@ export function Contact() {
     resolver: zodResolver(contactSchema),
   })
 
-  async function onSubmit(values: ContactFormValues) {
+  async function onSubmit(_values: ContactFormValues) {
     await new Promise((resolve) => setTimeout(resolve, 600)) // شبیه‌سازی ارسال
     showToast('پیام شما با موفقیت ارسال شد', 'success')
     reset()

@@ -25,7 +25,7 @@ export function Contact() {
     resolver: zodResolver(contactSchema),
   });
 
-  async function onSubmit(_values: ContactFormValues) {
+  async function onSubmit() {
     await new Promise((resolve) => setTimeout(resolve, 600));
     showToast("پیام شما با موفقیت ارسال شد", "success");
     reset();

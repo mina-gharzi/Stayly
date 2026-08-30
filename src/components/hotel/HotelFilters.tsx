@@ -8,7 +8,6 @@ import {
   MapPin,
   Sparkles,
   ChevronDown,
-  SlidersHorizontal,
   RotateCcw,
   type LucideIcon,
 } from "lucide-react";

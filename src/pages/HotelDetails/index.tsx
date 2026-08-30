@@ -23,44 +23,55 @@ export function HotelDetails() {
     navigate(`/booking/${hotelId}?roomTypeId=${room.id}`);
   }
 
+  /* ─── Loading ─── */
   if (isLoading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <Skeleton className="h-100 w-full rounded-2xl" />
-        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12">
-          <div className="flex flex-col gap-6 lg:col-span-8">
-            <Skeleton className="h-10 w-2/3" />
-            <Skeleton className="h-6 w-1/3" />
-            <Skeleton className="mt-4 h-32 w-full" />
+        <Skeleton className="h-[400px] lg:h-[500px] w-full rounded-2xl" />
+        <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-12">
+          <div className="flex flex-col gap-8 lg:col-span-8">
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-2/3 rounded-lg" />
+              <Skeleton className="h-6 w-1/3 rounded-lg" />
+            </div>
+            <Skeleton className="h-32 w-full rounded-xl" />
+            <Skeleton className="h-48 w-full rounded-xl" />
           </div>
-          <Skeleton className="h-64 w-full rounded-2xl lg:col-span-4" />
+          <div className="lg:col-span-4">
+            <Skeleton className="h-80 w-full rounded-2xl" />
+          </div>
         </div>
       </div>
     );
   }
 
+  /* ─── Error ─── */
   if (isError) {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-4 px-4 py-24 text-center">
-        <AlertTriangle className="h-10 w-10 text-neutral-400" aria-hidden />
+      <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-5 px-4 py-32 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100 text-neutral-500">
+          <AlertTriangle className="h-8 w-8" aria-hidden />
+        </div>
         <div>
-          <p className="text-lg font-medium text-neutral-900">مشکلی پیش آمد</p>
-          <p className="mt-1 text-sm text-neutral-600">
-            امکان دریافت اطلاعات هتل وجود ندارد.
+          <h2 className="text-xl font-bold text-neutral-900">مشکلی پیش آمد</h2>
+          <p className="mt-2 text-neutral-600 leading-relaxed">
+            متأسفانه در دریافت اطلاعات این هتل مشکلی به وجود آمده است.
           </p>
         </div>
-        <Button variant="outline" className="mt-2" onClick={() => refetch()}>
+        <Button size="lg" className="mt-2" onClick={() => refetch()}>
           تلاش مجدد
         </Button>
       </div>
     );
   }
 
+  /* ─── Not Found ─── */
   if (!hotel) {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-4 px-4 py-24 text-center">
-        <p className="text-lg font-medium text-neutral-900">هتل یافت نشد</p>
-        <Button variant="outline" onClick={() => navigate("/hotels")}>
+      <div className="mx-auto flex max-w-md flex-col items-center gap-5 px-4 py-32 text-center">
+        <p className="text-xl font-bold text-neutral-900">هتل یافت نشد</p>
+        <p className="text-neutral-600">هتل مورد نظر شما وجود ندارد.</p>
+        <Button size="lg" onClick={() => navigate("/hotels")}>
           بازگشت به جستجو
         </Button>
       </div>
@@ -77,7 +88,7 @@ export function HotelDetails() {
         {/* ══════ Main Content ══════ */}
         <div className="flex flex-col gap-10 lg:col-span-8">
           {/* Header */}
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl">
@@ -99,19 +110,23 @@ export function HotelDetails() {
               </p>
             </div>
 
-            {/* Rating */}
-            <div className="flex shrink-0 items-center gap-3 rounded-lg border border-neutral-200 px-4 py-2">
-              <div className="flex flex-col items-end">
-                <span className="text-sm font-medium text-neutral-900">
-                  عالی
-                </span>
-                <span className="text-xs text-neutral-500">
-                  {hotel.reviewCount} نظر
-                </span>
-              </div>
-              <span className="flex h-10 w-10 items-center justify-center rounded bg-primary-700 tabular-nums text-lg font-bold text-white">
+            {/* امتیاز — ساده و تمیز */}
+            <div className="flex shrink-0 items-center gap-2.5">
+              <span className="rounded-lg bg-primary-700 px-2.5 py-1.5 text-sm font-bold text-white tabular-nums">
                 {hotel.guestRating.toFixed(1)}
               </span>
+              <div>
+                <p className="text-sm font-semibold text-neutral-900">
+                  {hotel.guestRating >= 4.5
+                    ? "فوق‌العاده"
+                    : hotel.guestRating >= 4.0
+                      ? "بسیار خوب"
+                      : "خوب"}
+                </p>
+                <p className="text-xs text-neutral-500">
+                  {hotel.reviewCount} نظر ثبت شده
+                </p>
+              </div>
             </div>
           </div>
 
@@ -214,7 +229,6 @@ export function HotelDetails() {
                 </span>
                 <span className="text-sm text-neutral-500">تومان</span>
               </div>
-
               <Button
                 size="lg"
                 className="mt-6 w-full font-medium"

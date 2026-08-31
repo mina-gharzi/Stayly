@@ -15,6 +15,7 @@ import { hotels } from '@/data/hotels'
 import { roomTypes } from '@/data/rooms'
 import { calculateNights, calculateSubtotal, calculateTaxes, calculateTotal } from '@/utils/pricing'
 import { BookingSummaryCard } from '@/components/booking/BookingSummaryCard'
+import { FadeIn } from '@/components/common/FadeIn'
 
 export function Checkout() {
   const { hotelId } = useParams<{ hotelId: string }>()
@@ -106,10 +107,12 @@ export function Checkout() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="text-2xl font-bold text-neutral-900">پرداخت وCheckout</h1>
+      <FadeIn>
+        <h1 className="text-2xl font-bold text-neutral-900">پرداخت وCheckout</h1>
+      </FadeIn>
 
       <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+        <FadeIn delay={100} className="lg:col-span-2">
           <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4 rounded-lg border border-neutral-200 p-6 sm:p-8">
             <h2 className="font-semibold text-neutral-900">اطلاعات مسافر</h2>
             <Input label="نام" type="text" {...register('firstName')} error={errors.firstName?.message} />
@@ -125,9 +128,9 @@ export function Checkout() {
             <Button type="submit" disabled={isSubmitting} className="mt-6 w-full">تکمیل رزرو</Button>
             {nights <= 0 && <p className="text-sm text-error-500 mt-2">تاریخ خروج باید بعد از تاریخ ورود باشد.</p>}
           </form>
-        </div>
+        </FadeIn>
 
-        <div className="lg:col-span-1 sticky top-20">
+        <FadeIn delay={200} className="lg:col-span-1 sticky top-20">
           <BookingSummaryCard
             hotel={hotel}
             room={room}
@@ -141,7 +144,7 @@ export function Checkout() {
             discount={0}
             total={total}
           />
-        </div>
+        </FadeIn>
       </div>
     </div>
   )

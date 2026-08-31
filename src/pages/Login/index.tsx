@@ -42,21 +42,14 @@ export function Login() {
       {/* ── سمت راست: بخش بصری ── */}
       <div className="relative hidden w-1/2 lg:flex lg:items-center lg:justify-center overflow-hidden bg-linear-to-br from-primary-700 via-primary-600 to-primary-900">
         {/* الگوهای دکوراتیو */}
-        <div className="absolute inset-0 opacity-[0.07]">
+        <div className="absolute inset-0 opacity-deco-medium">
           <div className="absolute top-20 right-20 h-72 w-72 rounded-full bg-white/30 blur-3xl" />
           <div className="absolute bottom-32 left-16 h-96 w-96 rounded-full bg-white/20 blur-3xl" />
           <div className="absolute top-1/2 left-1/3 h-48 w-48 rounded-full bg-white/25 blur-2xl" />
         </div>
 
         {/* شبکه نقطه‌ای */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, white 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
+        <div className="absolute inset-0 pattern-dots-lg opacity-dot" />
 
         {/* شکل‌های شناور */}
         <div className="absolute top-16 left-12 h-16 w-16 rotate-45 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm animate-[float_6s_ease-in-out_infinite]" />
@@ -73,8 +66,6 @@ export function Login() {
           <p className="mt-4 text-base text-primary-100/70 leading-relaxed">
             با بیش از دو هزار اقامتگاه منتخب، بهترین اقامت را تجربه کنید
           </p>
-
-          {/* نقل قول */}
 
           {/* آمار */}
           <div className="mt-10 grid grid-cols-3 gap-4">
@@ -161,7 +152,7 @@ export function Login() {
                     "focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/10",
                     errors.email
                       ? "border-error-500 focus:border-error-500 focus:ring-error-500/10"
-                      : "border-neutral-200 hover:border-neutral-300",
+                      : "border-neutral-200 hover:border-neutral-300"
                   )}
                   {...register("email")}
                 />
@@ -200,7 +191,7 @@ export function Login() {
                     "focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/10",
                     errors.password
                       ? "border-error-500 focus:border-error-500 focus:ring-error-500/10"
-                      : "border-neutral-200 hover:border-neutral-300",
+                      : "border-neutral-200 hover:border-neutral-300"
                   )}
                   {...register("password")}
                 />
@@ -299,24 +290,6 @@ export function Login() {
           </p>
         </div>
       </div>
-
-      {/* کلید‌های انیمیشن */}
-      <style>{`
-        @keyframes fadeSlideUp {
-          from {
-            opacity: 0;
-            transform: translateY(16px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0) rotate(var(--tw-rotate, 0deg)); }
-          50% { transform: translateY(-12px) rotate(var(--tw-rotate, 0deg)); }
-        }
-      `}</style>
     </div>
   );
 }

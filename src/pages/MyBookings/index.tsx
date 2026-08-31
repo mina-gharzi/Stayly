@@ -14,6 +14,7 @@ import { useAuthStore } from "@/store/authStore";
 import { getBookingsByUser } from "@/services/bookings";
 import { BookingCard } from "@/components/booking/BookingCard";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { FadeIn } from "@/components/common/FadeIn";
 import { cn } from "@/utils/cn";
 import type { Booking } from "@/types";
 
@@ -70,79 +71,71 @@ export function MyBookings() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-      {/* ── هدر ── */}
-      <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-primary-700 via-primary-600 to-primary-900 p-6 sm:p-8">
-        {/* الگوهای دکوراتیو */}
-        <div className="absolute inset-0 opacity-[0.06]">
-          <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/30 blur-3xl" />
-          <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-white/20 blur-3xl" />
-        </div>
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, white 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-          }}
-        />
+      <FadeIn>
+        <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-primary-700 via-primary-600 to-primary-900 p-6 sm:p-8">
+          <div className="absolute inset-0 opacity-deco-light">
+            <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/30 blur-3xl" />
+            <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-white/20 blur-3xl" />
+          </div>
+          <div className="absolute inset-0 pattern-dots opacity-dot" />
 
-        <div className="relative z-10">
-          <h1 className="text-2xl font-bold text-white">رزروهای من</h1>
-          <p className="mt-1 text-sm text-primary-100/70">
-            مدیریت و پیگیری رزروهای اقامتگاه
-          </p>
+          <div className="relative z-10">
+            <h1 className="text-2xl font-bold text-white">رزروهای من</h1>
+            <p className="mt-1 text-sm text-primary-100/70">
+              مدیریت و پیگیری رزروهای اقامتگاه
+            </p>
 
-          {/* آمار سریع */}
-          <div className="mt-5 grid grid-cols-3 gap-3 sm:max-w-md">
-            <div className="rounded-xl bg-white/10 px-4 py-3 backdrop-blur-sm">
-              <div className="text-xl font-bold text-white">{upcomingCount}</div>
-              <div className="mt-0.5 text-[11px] text-primary-100/60">
-                در پیش رو
+            <div className="mt-5 grid grid-cols-3 gap-3 sm:max-w-md">
+              <div className="rounded-xl bg-white/10 px-4 py-3 backdrop-blur-sm">
+                <div className="text-xl font-bold text-white">{upcomingCount}</div>
+                <div className="mt-0.5 text-[11px] text-primary-100/60">
+                  در پیش رو
+                </div>
               </div>
-            </div>
-            <div className="rounded-xl bg-white/10 px-4 py-3 backdrop-blur-sm">
-              <div className="text-xl font-bold text-white">
-                {completedCount}
+              <div className="rounded-xl bg-white/10 px-4 py-3 backdrop-blur-sm">
+                <div className="text-xl font-bold text-white">
+                  {completedCount}
+                </div>
+                <div className="mt-0.5 text-[11px] text-primary-100/60">
+                  انجام شده
+                </div>
               </div>
-              <div className="mt-0.5 text-[11px] text-primary-100/60">
-                انجام شده
-              </div>
-            </div>
-            <div className="rounded-xl bg-white/10 px-4 py-3 backdrop-blur-sm">
-              <div className="text-xl font-bold text-white">
-                {cancelledCount}
-              </div>
-              <div className="mt-0.5 text-[11px] text-primary-100/60">
-                لغو شده
+              <div className="rounded-xl bg-white/10 px-4 py-3 backdrop-blur-sm">
+                <div className="text-xl font-bold text-white">
+                  {cancelledCount}
+                </div>
+                <div className="mt-0.5 text-[11px] text-primary-100/60">
+                  لغو شده
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </FadeIn>
 
-      {/* ── تب‌ها ── */}
-      <div className="mt-6 flex gap-1 rounded-xl border border-neutral-200 bg-white p-1 shadow-card">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200",
-                activeTab === tab.key
-                  ? "bg-primary-700 text-white shadow-sm"
-                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-800"
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      <FadeIn delay={100}>
+        <div className="mt-6 flex gap-1 rounded-xl border border-neutral-200 bg-white p-1 shadow-card">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200",
+                  activeTab === tab.key
+                    ? "bg-primary-700 text-white shadow-sm"
+                    : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-800"
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </FadeIn>
 
-      {/* ── لیست رزروها ── */}
       <div className="mt-6 flex flex-col gap-4">
         {isLoading &&
           Array.from({ length: 2 }).map((_, i) => (
@@ -202,7 +195,9 @@ export function MyBookings() {
 
         {!isLoading &&
           filtered.map((booking) => (
-            <BookingCard key={booking.id} booking={booking} />
+            <FadeIn key={booking.id} direction="up">
+              <BookingCard booking={booking} />
+            </FadeIn>
           ))}
       </div>
     </div>

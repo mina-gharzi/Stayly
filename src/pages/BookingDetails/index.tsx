@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { FadeIn } from "@/components/common/FadeIn";
 import { formatToman } from "@/utils/currency";
 import { useToastStore } from "@/store/toastStore";
 import { cn } from "@/utils/cn";
@@ -117,16 +118,19 @@ export function BookingDetails() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       {/* دکمه بازگشت */}
-      <button
-        type="button"
-        onClick={() => navigate("/my-bookings")}
-        className="mb-6 flex items-center gap-1.5 text-sm font-medium text-neutral-500 transition-colors hover:text-primary-600"
-      >
-        <ArrowRight className="h-4 w-4" />
-        بازگشت به رزروها
-      </button>
+      <FadeIn>
+        <button
+          type="button"
+          onClick={() => navigate("/my-bookings")}
+          className="mb-6 flex items-center gap-1.5 text-sm font-medium text-neutral-500 transition-colors hover:text-primary-600"
+        >
+          <ArrowRight className="h-4 w-4" />
+          بازگشت به رزروها
+        </button>
+      </FadeIn>
 
       {/* ── هدر ── */}
+      <FadeIn delay={100}>
       <div className="relative overflow-hidden rounded-2xl bg-white shadow-card">
         {/* تصویر هتل */}
         {hotel?.images[0] && (
@@ -295,9 +299,8 @@ export function BookingDetails() {
             </div>
           )}
         </div>
-      </div>
-
-      {/* ── مودال تأیید لغو ── */}
+        </div>
+      </FadeIn>
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

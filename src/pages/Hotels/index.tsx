@@ -7,6 +7,7 @@ import { HotelCard } from "@/components/hotel/HotelCard";
 import { HotelCardSkeleton } from "@/components/hotel/HotelCardSkeleton";
 import { Pagination } from "@/components/ui/Pagination";
 import { Button } from "@/components/ui/Button";
+import { FadeIn } from "@/components/common/FadeIn";
 import { cities } from "@/data/cities";
 
 export function Hotels() {
@@ -96,7 +97,9 @@ export function Hotels() {
               <>
                 <div className="flex flex-col gap-4">
                   {data.data.map((hotel) => (
-                    <HotelCard key={hotel.id} hotel={hotel} layout="list" />
+                    <FadeIn key={hotel.id} direction="up">
+                      <HotelCard hotel={hotel} layout="list" />
+                    </FadeIn>
                   ))}
                 </div>
                 <div className="mt-8">

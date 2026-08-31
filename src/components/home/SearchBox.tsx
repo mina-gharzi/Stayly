@@ -32,9 +32,9 @@ export function SearchBox() {
   const selectedCity = cities.find((c) => c.id === destination);
 
   return (
-    <div className="relative w-full">
+    <div className="relative flex w-full max-w-4xl items-center justify-center">
       {/* لیست عمودی شهرها — دسکتاپ */}
-      <div className="absolute right-8 top-1/2 hidden -translate-y-1/2 flex-col gap-3.5 lg:flex xl:right-12">
+      <div className="absolute right-0 top-1/2 hidden -translate-y-1/2 flex-col gap-3.5 pr-2 lg:flex xl:right-8">
         {popularCities.map((city) => {
           const isSelected = destination === city.id;
           return (

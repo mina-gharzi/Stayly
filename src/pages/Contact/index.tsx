@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { contactSchema, type ContactFormValues } from "@/schemas/contact";
 import { Button } from "@/components/ui/Button";
+import { FadeIn } from "@/components/common/FadeIn";
 import { useToastStore } from "@/store/toastStore";
 import { cn } from "@/utils/cn";
 
@@ -92,28 +93,30 @@ export function Contact() {
           <div className="absolute inset-0 bg-neutral-900/60" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-3xl text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
-            <Headphones className="h-7 w-7 text-white" />
+        <FadeIn>
+          <div className="relative z-10 mx-auto max-w-3xl text-center">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+              <Headphones className="h-7 w-7 text-white" />
+            </div>
+            <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+              ما اینجا هستیم که کمکت کنیم
+            </h1>
+            <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/80">
+              سوالی داری؟ پیشنهادی داری؟ یا مشکلی پیش اومده؟
+              تیم پشتیبانی ما آماده شنیدنه.
+            </p>
           </div>
-          <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            ما اینجا هستیم که کمکت کنیم
-          </h1>
-          <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/80">
-            سوالی داری؟ پیشنهادی داری؟ یا مشکلی پیش اومده؟
-            تیم پشتیبانی ما آماده شنیدنه.
-          </p>
-        </div>
+        </FadeIn>
       </div>
 
       {/* ── کارت‌های اطلاعات تماس ── */}
       <div className="relative z-10 mx-auto -mt-8 max-w-3xl px-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {contactMethods.map((item) => (
-            <div
-              key={item.label}
-              className="group flex items-center gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-card transition-all duration-300 hover:shadow-elevated hover:border-primary-100 sm:flex-col sm:text-center"
-            >
+          {contactMethods.map((item, index) => (
+            <FadeIn key={item.label} delay={index * 100} direction="up">
+              <div
+                className="group flex items-center gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-card transition-all duration-300 hover:shadow-elevated hover:border-primary-100 sm:flex-col sm:text-center"
+              >
               <div
                 className={cn(
                   "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110",
@@ -133,7 +136,8 @@ export function Contact() {
                   {item.value}
                 </p>
               </div>
-            </div>
+              </div>
+            </FadeIn>
           ))}
         </div>
       </div>
@@ -142,7 +146,7 @@ export function Contact() {
       <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
           {/* فرم */}
-          <div className="lg:col-span-8">
+          <FadeIn direction="right" className="lg:col-span-8">
             <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-card">
               {/* هدر فرم */}
               <div className="border-b border-neutral-100 bg-neutral-50/50 px-6 py-5 sm:px-8">
@@ -287,10 +291,10 @@ export function Contact() {
                 </div>
               </form>
             </div>
-          </div>
+          </FadeIn>
 
           {/* سایدبار */}
-          <div className="lg:col-span-4">
+          <FadeIn direction="left" delay={200} className="lg:col-span-4">
             <div className="flex flex-col gap-4">
               {/* ساعت کاری */}
               <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card">
@@ -374,16 +378,9 @@ export function Contact() {
                 </div>
               </div>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </div>
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateX(-8px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-      `}</style>
     </div>
   );
 }

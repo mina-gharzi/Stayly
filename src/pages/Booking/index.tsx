@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { GuestSelector } from '@/components/ui/GuestSelector'
 import { BookingSummaryCard } from '@/components/booking/BookingSummaryCard'
+import { FadeIn } from '@/components/common/FadeIn'
 import { Skeleton } from '@/components/ui/Skeleton'
 
 function todayPlus(days: number) {
@@ -76,10 +77,12 @@ export function Booking() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="text-2xl font-bold text-neutral-900">تکمیل اطلاعات رزرو</h1>
+      <FadeIn>
+        <h1 className="text-2xl font-bold text-neutral-900">تکمیل اطلاعات رزرو</h1>
+      </FadeIn>
 
       <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="flex flex-col gap-6 lg:col-span-2">
+        <FadeIn delay={100} className="flex flex-col gap-6 lg:col-span-2">
           <div className="grid grid-cols-1 gap-3 rounded-lg border border-neutral-200 p-4 sm:grid-cols-3">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-neutral-800">ورود</label>
@@ -116,15 +119,15 @@ export function Booking() {
             <Button type="submit" disabled={nights <= 0}>ادامه به پرداخت</Button>
             {nights <= 0 && <p className="text-sm text-error-500">تاریخ خروج باید بعد از تاریخ ورود باشد.</p>}
           </form>
-        </div>
+        </FadeIn>
 
-        <div className="lg:col-span-1">
+        <FadeIn delay={200} className="lg:col-span-1">
           <div className="sticky top-20">
             <BookingSummaryCard hotel={hotel} room={room} checkIn={draft.checkIn} checkOut={draft.checkOut}
               nights={nights} adults={draft.adults} children={draft.children}
               subtotal={subtotal} taxAmount={taxAmount} discount={0} total={total} />
           </div>
-        </div>
+        </FadeIn>
       </div>
     </div>
   )

@@ -1,0 +1,225 @@
+/* ═══════════════════════════════════════════════
+   Stayly Design Tokens
+   ═══════════════════════════════════════════════
+   تمام تغییرات طراحی از اینجا مدیریت می‌شود.
+   فقط کافیست مقادیر زیر را تغییر دهید تا
+   کل پروژه یکدست آپدیت شود.
+   ═══════════════════════════════════════════════ */
+
+@theme {
+  --color-primary-50: #f5ebeb;
+  --color-primary-100: #e4d0d0;
+  --color-primary-300: #d5b4b4;
+  --color-primary-500: #b99595;
+  --color-primary-600: #a88787;
+  --color-primary-700: #867070;
+  --color-primary-900: #6f5b5b;
+
+  /* ─── رنگ‌های خنثی (Neutral) ─── */
+
+  --color-neutral-50: #faf9f9;
+  --color-neutral-100: #f3f0f0;
+  --color-neutral-200: #e5e0e0;
+  --color-neutral-400: #b8aeae;
+  --color-neutral-600: #756c6c;
+  --color-neutral-800: #4a4242;
+  --color-neutral-900: #2d2828;
+
+  /* ─── رنگ‌های وضعیت (Semantic) ─── */
+
+  --color-success-100: #dcfce7;
+  --color-success-500: #16a34a;
+
+  --color-error-100: #fee2e2;
+  --color-error-500: #dc2626;
+
+  --color-warning-100: #fef3c7;
+  --color-warning-500: #d97706;
+
+  /* ─── رنگ‌های برند Third-party ─── */
+
+  --color-google: #4285f4;
+  --color-google-green: #34a853;
+  --color-google-yellow: #fbbc05;
+  --color-google-red: #ea4335;
+
+  /* ─── فونت‌ها ─── */
+  /* فارسی: font-sans (وزیرمتن) — پیش‌فرض کل سایت */
+  /* انگلیسی/کد: font-mono (IBM Plex Mono) — فقط محتوای LTR */
+  /* برند: font-display (Sora) — فقط نام STAYLY */
+  --font-sans: "Vazirmatn", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --font-display: "Sora", sans-serif;
+
+  /* ─── اندازه فونت ─── */
+  --font-size-2xs: 10px;
+  --font-size-xs: 11px;
+
+  /* ─── شعاع گوشه‌ها (Border Radius) ─── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+
+  /* ─── سایه‌ها (Shadows) ─── */
+  --shadow-card:
+    0 1px 3px rgba(33, 33, 33, 0.06), 0 1px 2px rgba(33, 33, 33, 0.04);
+  --shadow-elevated: 0 8px 24px rgba(33, 33, 33, 0.1);
+  --shadow-float: 0 20px 40px rgba(33, 33, 33, 0.12);
+
+  /* ─── فاصله‌ها (Spacing) ─── */
+  --spacing-icon-sm: 18px;
+  --spacing-icon-md: 20px;
+
+  /* ─── فاصله حروف (Letter Spacing) ─── */
+  --tracking-wide: 0.25em;
+
+  /* ─── انیمیشن‌ها (Animation Durations) ─── */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+
+  /* ─── عدم شفافیت (Opacity) ─── */
+  --opacity-dot: 0.04;
+  --opacity-deco-light: 0.06;
+  --opacity-deco-medium: 0.07;
+}
+
+/* ═══════════════════════════════════════════════
+   کلاس‌های کمکی (Utility Classes)
+   ═══════════════════════════════════════════════ */
+
+@layer base {
+  body {
+    @apply bg-neutral-50 text-neutral-900;
+  }
+
+  /* قیمت‌ها و اعداد فارسی */
+  .tabular-price {
+    @apply font-sans tabular-nums;
+  }
+
+  /* محتوای چپ‌به‌راست */
+  .ltr-content {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  /* الگوی نقطه‌ای دکوراتیو */
+  .pattern-dots {
+    background-image: radial-gradient(circle, white 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .pattern-dots-lg {
+    background-image: radial-gradient(circle, white 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   انیمیشن‌ها (Animations)
+   ═══════════════════════════════════════════════ */
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--tw-rotate, 0deg));
+  }
+  50% {
+    transform: translateY(-12px) rotate(var(--tw-rotate, 0deg));
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   انیمیشن‌های اسکرول (Scroll Animations)
+   ═══════════════════════════════════════════════ */
+
+.scroll-fade-in {
+  opacity: 0;
+  transition:
+    opacity var(--fade-duration, 500ms) ease-out var(--fade-delay, 0ms),
+    transform var(--fade-duration, 500ms) ease-out var(--fade-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.scroll-fade-in.is-visible {
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+}
+
+/* جهت‌ها — مقدار اولیه transform */
+.scroll-fade-in.fade-in-up {
+  transform: translateY(var(--fade-distance, 24px));
+}
+
+.scroll-fade-in.fade-in-down {
+  transform: translateY(calc(-1 * var(--fade-distance, 24px)));
+}
+
+.scroll-fade-in.fade-in-left {
+  transform: translateX(var(--fade-distance, 24px));
+}
+
+.scroll-fade-in.fade-in-right {
+  transform: translateX(calc(-1 * var(--fade-distance, 24px)));
+}
+
+.scroll-fade-in.fade-in {
+  transform: scale(0.96);
+}
+
+/* کاهش حرکت برای کاربران حساس */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-fade-in {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

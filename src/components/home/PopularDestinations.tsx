@@ -14,7 +14,7 @@ export function PopularDestinations() {
           <div className="rounded-2xl bg-white p-6 shadow-elevated sm:p-10">
             {/* هدر سکشن — وسطچین */}
             <div className="text-center">
-              <p className="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-primary-600">
+              <p className="font-mono text-xs font-semibold uppercase tracking-wide text-primary-600">
                 Destinations
               </p>
               <h2 className="mt-2 text-2xl font-bold text-primary-600 sm:text-3xl">
@@ -66,7 +66,7 @@ export function PopularDestinations() {
                   to="/hotels"
                   className="group relative flex aspect-4/3 flex-col items-center justify-center gap-2 overflow-hidden rounded-lg bg-linear-to-br from-primary-600 to-primary-700 p-4 text-center text-white shadow-card transition-shadow hover:shadow-elevated sm:aspect-3/4 lg:hidden"
                 >
-                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.25em] text-white/70">
+                  <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-white/70">
                     Destinations
                   </span>
                   <span className="text-lg font-bold">مشاهده همه</span>

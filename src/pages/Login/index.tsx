@@ -38,76 +38,21 @@ export function Login() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
-      {/* ── سمت راست: بخش بصری ── */}
-      <div className="relative hidden w-1/2 lg:flex lg:items-center lg:justify-center overflow-hidden bg-linear-to-br from-primary-700 via-primary-600 to-primary-900">
-        {/* الگوهای دکوراتیو */}
-        <div className="absolute inset-0 opacity-deco-medium">
-          <div className="absolute top-20 right-20 h-72 w-72 rounded-full bg-white/30 blur-3xl" />
-          <div className="absolute bottom-32 left-16 h-96 w-96 rounded-full bg-white/20 blur-3xl" />
-          <div className="absolute top-1/2 left-1/3 h-48 w-48 rounded-full bg-white/25 blur-2xl" />
-        </div>
-
-        {/* شبکه نقطه‌ای */}
-        <div className="absolute inset-0 pattern-dots-lg opacity-dot" />
-
-        {/* شکل‌های شناور */}
-        <div className="absolute top-16 left-12 h-16 w-16 rotate-45 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm animate-[float_6s_ease-in-out_infinite]" />
-        <div className="absolute bottom-24 right-16 h-10 w-10 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm animate-[float_8s_ease-in-out_infinite_reverse]" />
-        <div className="absolute top-1/3 right-8 h-6 w-6 rotate-12 rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm animate-[float_5s_ease-in-out_infinite_1s]" />
-
-        {/* محتوا */}
-        <div className="relative z-10 mx-auto max-w-md px-8 text-center animate-[fadeSlideUp_0.8s_ease-out]">
-          <h2 className="text-3xl font-bold text-white leading-snug">
-            جایی که سفرهایتان
-            <br />
-            به خاطره تبدیل می‌شوند
-          </h2>
-          <p className="mt-4 text-base text-primary-100/70 leading-relaxed">
-            با بیش از دو هزار اقامتگاه منتخب، بهترین اقامت را تجربه کنید
-          </p>
-
-          {/* آمار */}
-          <div className="mt-10 grid grid-cols-3 gap-4">
-            <div className="rounded-xl bg-white/10 px-4 py-4 backdrop-blur-sm">
-              <div className="text-2xl font-bold text-white">۲,۵۰۰+</div>
-              <div className="mt-1.5 text-xs text-primary-100/60">
-                اقامتگاه منتخب
-              </div>
-            </div>
-            <div className="rounded-xl bg-white/10 px-4 py-4 backdrop-blur-sm">
-              <div className="text-2xl font-bold text-white">۱۲۰+</div>
-              <div className="mt-1.5 text-xs text-primary-100/60">
-                مقصد در جهان
-              </div>
-            </div>
-            <div className="rounded-xl bg-white/10 px-4 py-4 backdrop-blur-sm">
-              <div className="text-2xl font-bold text-white">۵۰K+</div>
-              <div className="mt-1.5 text-xs text-primary-100/60">
-                مسافر راضی
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── سمت چپ: فرم لاگین ── */}
-      <div className="flex w-full items-center justify-center px-6 py-12 lg:w-1/2 bg-neutral-100/60">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+      {/* ── فرم لاگین (همیشه وسط‌چین، بدون پنل بصری کنار) ── */}
+      <div className="flex w-full items-center justify-center px-6 py-12 bg-neutral-100/60">
         <div className="w-full max-w-md animate-[fadeSlideUp_0.6s_ease-out]">
-          {/* لوگو (موبایل) */}
-          <div className="mb-8 text-center lg:hidden">
+          {/* لوگو */}
+          <div className="mb-8 text-center">
             <Link to="/" className="inline-flex items-center">
               <span className="font-display text-3xl font-extrabold tracking-tight text-primary-700">
-                STAYLY
+                Stayly
               </span>
             </Link>
           </div>
 
           {/* هدر */}
           <div className="mb-8 text-center">
-            <h1 className="hidden text-2xl font-bold text-neutral-900 lg:block">
-              خوش اومدی!
-            </h1>
             <p className="mt-2 text-sm text-neutral-400">
               برای ادامه سفرت وارد حساب کاربریت شو
             </p>
@@ -137,7 +82,7 @@ export function Login() {
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
-                  <Mail className="h-4.5 w-4.5 text-neutral-400 transition-colors group-focus-within:text-primary-500" />
+                  <Mail className="h-icon-sm w-icon-sm text-neutral-400 transition-colors group-focus-within:text-primary-500" />
                 </div>
                 <input
                   id="email"
@@ -152,7 +97,7 @@ export function Login() {
                     "focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/10",
                     errors.email
                       ? "border-error-500 focus:border-error-500 focus:ring-error-500/10"
-                      : "border-neutral-200 hover:border-neutral-300"
+                      : "border-neutral-200 hover:border-neutral-300",
                   )}
                   {...register("email")}
                 />
@@ -174,7 +119,7 @@ export function Login() {
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
-                  <Lock className="h-4.5 w-4.5 text-neutral-400 transition-colors group-focus-within:text-primary-500" />
+                  <Lock className="h-icon-sm w-icon-sm text-neutral-400 transition-colors group-focus-within:text-primary-500" />
                 </div>
                 <input
                   id="password"
@@ -191,7 +136,7 @@ export function Login() {
                     "focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/10",
                     errors.password
                       ? "border-error-500 focus:border-error-500 focus:ring-error-500/10"
-                      : "border-neutral-200 hover:border-neutral-300"
+                      : "border-neutral-200 hover:border-neutral-300",
                   )}
                   {...register("password")}
                 />
@@ -202,9 +147,9 @@ export function Login() {
                   aria-label={showPassword ? "مخفی کردن رمز" : "نمایش رمز"}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4.5 w-4.5" />
+                    <EyeOff className="h-icon-sm w-icon-sm" />
                   ) : (
-                    <Eye className="h-4.5 w-4.5" />
+                    <Eye className="h-icon-sm w-icon-sm" />
                   )}
                 </button>
               </div>

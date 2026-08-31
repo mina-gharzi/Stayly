@@ -79,7 +79,7 @@ export function Navbar() {
                     : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
                 }`}
               >
-                <link.icon className="h-4.5 w-4.5" aria-hidden />
+                <link.icon className="h-icon-sm w-icon-sm" aria-hidden />
               </Link>
             ))}
           </nav>
@@ -191,7 +191,7 @@ export function Navbar() {
             className="flex items-center gap-2.5"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-primary-500 to-primary-700 text-white">
-              <BedDouble className="h-4.5 w-4.5" aria-hidden />
+              <BedDouble className="h-icon-sm w-icon-sm" aria-hidden />
             </span>
             <span className="text-xl font-extrabold tracking-tight text-neutral-900">
               Stay<span className="text-primary-600">ly</span>
@@ -220,7 +220,7 @@ export function Navbar() {
                     : "text-neutral-700 hover:bg-neutral-50"
                 }`}
               >
-                <link.icon className="h-4.5 w-4.5" aria-hidden />
+                <link.icon className="h-icon-sm w-icon-sm" aria-hidden />
                 {link.label}
               </Link>
             ))}
@@ -229,7 +229,7 @@ export function Navbar() {
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50"
             >
-              <Heart className="h-4.5 w-4.5" aria-hidden />
+              <Heart className="h-icon-sm w-icon-sm" aria-hidden />
               علاقهمندیها
             </Link>
 

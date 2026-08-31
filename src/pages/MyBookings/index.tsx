@@ -1,65 +1,210 @@
 // src/pages/MyBookings/index.tsx
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { CalendarX } from 'lucide-react'
-import { useAuthStore } from '@/store/authStore'
-import { getBookingsByUser } from '@/services/bookings'
-import { BookingCard } from '@/components/booking/BookingCard'
-import { Skeleton } from '@/components/ui/Skeleton'
-import { cn } from '@/utils/cn'
-import type { Booking } from '@/types'
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import {
+  CalendarX,
+  CalendarCheck,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  Search,
+} from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { getBookingsByUser } from "@/services/bookings";
+import { BookingCard } from "@/components/booking/BookingCard";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { cn } from "@/utils/cn";
+import type { Booking } from "@/types";
 
-const tabs: { key: string; label: string; statuses: Booking['status'][] }[] = [
-  { key: 'upcoming', label: 'در پیش رو', statuses: ['pending', 'confirmed'] },
-  { key: 'completed', label: 'انجام‌شده', statuses: ['completed'] },
-  { key: 'cancelled', label: 'لغوشده', statuses: ['cancelled'] },
-]
+const tabs: {
+  key: string;
+  label: string;
+  statuses: Booking["status"][];
+  icon: typeof CalendarCheck;
+}[] = [
+  {
+    key: "upcoming",
+    label: "در پیش رو",
+    statuses: ["pending", "confirmed"],
+    icon: Clock,
+  },
+  {
+    key: "completed",
+    label: "انجام‌شده",
+    statuses: ["completed"],
+    icon: CheckCircle2,
+  },
+  {
+    key: "cancelled",
+    label: "لغو شده",
+    statuses: ["cancelled"],
+    icon: XCircle,
+  },
+];
 
 export function MyBookings() {
-  const user = useAuthStore((s) => s.user)
-  const [activeTab, setActiveTab] = useState('upcoming')
+  const user = useAuthStore((s) => s.user);
+  const [activeTab, setActiveTab] = useState("upcoming");
 
   const { data: bookings, isLoading } = useQuery({
-    queryKey: ['bookings', user?.id],
+    queryKey: ["bookings", user?.id],
     queryFn: () => getBookingsByUser(user!.id),
     enabled: !!user,
-  })
+  });
 
-  const currentTab = tabs.find((t) => t.key === activeTab)!
-  const filtered = (bookings ?? []).filter((b) => currentTab.statuses.includes(b.status))
+  const currentTab = tabs.find((t) => t.key === activeTab)!;
+  const filtered = (bookings ?? []).filter((b) =>
+    currentTab.statuses.includes(b.status)
+  );
+
+  const upcomingCount = (bookings ?? []).filter((b) =>
+    ["pending", "confirmed"].includes(b.status)
+  ).length;
+  const completedCount = (bookings ?? []).filter(
+    (b) => b.status === "completed"
+  ).length;
+  const cancelledCount = (bookings ?? []).filter(
+    (b) => b.status === "cancelled"
+  ).length;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="text-2xl font-bold text-neutral-900">رزروهای من</h1>
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      {/* ── هدر ── */}
+      <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-primary-700 via-primary-600 to-primary-900 p-6 sm:p-8">
+        {/* الگوهای دکوراتیو */}
+        <div className="absolute inset-0 opacity-[0.06]">
+          <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/30 blur-3xl" />
+          <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-white/20 blur-3xl" />
+        </div>
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, white 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
 
-      <div className="mt-6 flex gap-2 border-b border-neutral-200">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={cn(
-              'border-b-2 px-4 py-2 text-sm font-medium transition',
-              activeTab === tab.key ? 'border-primary-700 text-primary-700' : 'border-transparent text-neutral-600'
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
+        <div className="relative z-10">
+          <h1 className="text-2xl font-bold text-white">رزروهای من</h1>
+          <p className="mt-1 text-sm text-primary-100/70">
+            مدیریت و پیگیری رزروهای اقامتگاه
+          </p>
+
+          {/* آمار سریع */}
+          <div className="mt-5 grid grid-cols-3 gap-3 sm:max-w-md">
+            <div className="rounded-xl bg-white/10 px-4 py-3 backdrop-blur-sm">
+              <div className="text-xl font-bold text-white">{upcomingCount}</div>
+              <div className="mt-0.5 text-[11px] text-primary-100/60">
+                در پیش رو
+              </div>
+            </div>
+            <div className="rounded-xl bg-white/10 px-4 py-3 backdrop-blur-sm">
+              <div className="text-xl font-bold text-white">
+                {completedCount}
+              </div>
+              <div className="mt-0.5 text-[11px] text-primary-100/60">
+                انجام شده
+              </div>
+            </div>
+            <div className="rounded-xl bg-white/10 px-4 py-3 backdrop-blur-sm">
+              <div className="text-xl font-bold text-white">
+                {cancelledCount}
+              </div>
+              <div className="mt-0.5 text-[11px] text-primary-100/60">
+                لغو شده
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
+      {/* ── تب‌ها ── */}
+      <div className="mt-6 flex gap-1 rounded-xl border border-neutral-200 bg-white p-1 shadow-card">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={cn(
+                "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200",
+                activeTab === tab.key
+                  ? "bg-primary-700 text-white shadow-sm"
+                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-800"
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── لیست رزروها ── */}
       <div className="mt-6 flex flex-col gap-4">
-        {isLoading && Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-lg" />)}
+        {isLoading &&
+          Array.from({ length: 2 }).map((_, i) => (
+            <div
+              key={i}
+              className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-card"
+            >
+              <div className="flex flex-col sm:flex-row">
+                <Skeleton className="h-40 w-full sm:h-auto sm:w-48" />
+                <div className="flex flex-1 flex-col gap-3 p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                  </div>
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-4 w-36" />
+                  <div className="mt-auto flex items-center justify-between pt-2">
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
 
         {!isLoading && filtered.length === 0 && (
-          <div className="flex flex-col items-center gap-2 py-16 text-center">
-            <CalendarX className="h-8 w-8 text-neutral-400" aria-hidden />
-            <p className="font-medium text-neutral-900">رزروی یافت نشد</p>
-            <p className="text-sm text-neutral-600">شروع به کاوش هتل‌ها کنید.</p>
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-neutral-200 bg-white py-16">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-neutral-100">
+              <CalendarX className="h-7 w-7 text-neutral-400" />
+            </div>
+            <div className="text-center">
+              <p className="font-semibold text-neutral-800">
+                رزروی یافت نشد
+              </p>
+              <p className="mt-1 text-sm text-neutral-400">
+                {activeTab === "upcoming"
+                  ? "هنوز رزروی انجام نداده‌اید"
+                  : activeTab === "completed"
+                    ? "رزرو انجام شده‌ای ندارید"
+                    : "رزرو لغو شده‌ای ندارید"}
+              </p>
+            </div>
+            {activeTab === "upcoming" && (
+              <Link
+                to="/hotels"
+                className="flex items-center gap-2 rounded-xl bg-primary-700 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-900 active:scale-[0.98]"
+              >
+                <Search className="h-4 w-4" />
+                جستجوی اقامتگاه
+              </Link>
+            )}
           </div>
         )}
 
-        {!isLoading && filtered.map((booking) => <BookingCard key={booking.id} booking={booking} />)}
+        {!isLoading &&
+          filtered.map((booking) => (
+            <BookingCard key={booking.id} booking={booking} />
+          ))}
       </div>
     </div>
-  )
+  );
 }

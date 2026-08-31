@@ -17,7 +17,7 @@ export function FeaturedHotels() {
           <div className="rounded-2xl bg-white p-6 shadow-elevated sm:p-10">
             {/* هدر سکشن — وسطچین */}
             <div className="text-center">
-              <p className="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-primary-600">
+              <p className="font-mono text-xs font-semibold uppercase tracking-wide text-primary-600">
                 Featured
               </p>
               <h2 className="mt-2 text-2xl font-bold text-primary-600 sm:text-3xl">

@@ -89,14 +89,23 @@ export function Profile() {
               </h1>
               <p className="mt-1 text-sm text-primary-100/70">{user.email}</p>
               <div className="mt-3 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                <Badge variant="primary" className="bg-white/15 text-white border-0">
+                <Badge
+                  variant="primary"
+                  className="bg-white/15 text-white border-0"
+                >
                   {user.preferredCurrency}
                 </Badge>
-                <Badge variant="primary" className="bg-white/15 text-white border-0">
+                <Badge
+                  variant="primary"
+                  className="bg-white/15 text-white border-0"
+                >
                   {user.preferredLanguage === "fa" ? "فارسی" : "English"}
                 </Badge>
                 {user.country && (
-                  <Badge variant="primary" className="bg-white/15 text-white border-0">
+                  <Badge
+                    variant="primary"
+                    className="bg-white/15 text-white border-0"
+                  >
                     {user.country}
                   </Badge>
                 )}
@@ -157,12 +166,15 @@ export function Profile() {
           >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="firstName" className="text-sm font-medium text-neutral-800">
+                <label
+                  htmlFor="firstName"
+                  className="text-sm font-medium text-neutral-800"
+                >
                   نام
                 </label>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
-                    <User className="h-[18px] w-[18px] text-neutral-400" />
+                    <User className="h-icon-sm w-icon-sm text-neutral-400" />
                   </div>
                   <input
                     id="firstName"
@@ -177,23 +189,28 @@ export function Profile() {
                         : "cursor-default border-transparent bg-neutral-100/60",
                       errors.firstName
                         ? "border-error-500 focus:border-error-500 focus:ring-error-500/10"
-                        : "border-neutral-200 hover:border-neutral-300"
+                        : "border-neutral-200 hover:border-neutral-300",
                     )}
                     {...register("firstName")}
                   />
                 </div>
                 {errors.firstName && (
-                  <p className="text-xs text-error-500">{errors.firstName.message}</p>
+                  <p className="text-xs text-error-500">
+                    {errors.firstName.message}
+                  </p>
                 )}
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="lastName" className="text-sm font-medium text-neutral-800">
+                <label
+                  htmlFor="lastName"
+                  className="text-sm font-medium text-neutral-800"
+                >
                   نام خانوادگی
                 </label>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
-                    <User className="h-[18px] w-[18px] text-neutral-400" />
+                    <User className="h-icon-sm w-icon-sm text-neutral-400" />
                   </div>
                   <input
                     id="lastName"
@@ -208,24 +225,29 @@ export function Profile() {
                         : "cursor-default border-transparent bg-neutral-100/60",
                       errors.lastName
                         ? "border-error-500 focus:border-error-500 focus:ring-error-500/10"
-                        : "border-neutral-200 hover:border-neutral-300"
+                        : "border-neutral-200 hover:border-neutral-300",
                     )}
                     {...register("lastName")}
                   />
                 </div>
                 {errors.lastName && (
-                  <p className="text-xs text-error-500">{errors.lastName.message}</p>
+                  <p className="text-xs text-error-500">
+                    {errors.lastName.message}
+                  </p>
                 )}
               </div>
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="profile-email" className="text-sm font-medium text-neutral-800">
+              <label
+                htmlFor="profile-email"
+                className="text-sm font-medium text-neutral-800"
+              >
                 ایمیل
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
-                  <Mail className="h-[18px] w-[18px] text-neutral-400" />
+                  <Mail className="h-icon-sm w-icon-sm text-neutral-400" />
                 </div>
                 <input
                   id="profile-email"
@@ -241,7 +263,7 @@ export function Profile() {
                       : "cursor-default border-transparent bg-neutral-100/60",
                     errors.email
                       ? "border-error-500 focus:border-error-500 focus:ring-error-500/10"
-                      : "border-neutral-200 hover:border-neutral-300"
+                      : "border-neutral-200 hover:border-neutral-300",
                   )}
                   {...register("email")}
                 />
@@ -252,12 +274,15 @@ export function Profile() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="profile-phone" className="text-sm font-medium text-neutral-800">
+              <label
+                htmlFor="profile-phone"
+                className="text-sm font-medium text-neutral-800"
+              >
                 شماره تلفن
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
-                  <Phone className="h-[18px] w-[18px] text-neutral-400" />
+                  <Phone className="h-icon-sm w-icon-sm text-neutral-400" />
                 </div>
                 <input
                   id="profile-phone"
@@ -273,7 +298,7 @@ export function Profile() {
                       : "cursor-default border-transparent bg-neutral-100/60",
                     errors.phone
                       ? "border-error-500 focus:border-error-500 focus:ring-error-500/10"
-                      : "border-neutral-200 hover:border-neutral-300"
+                      : "border-neutral-200 hover:border-neutral-300",
                   )}
                   {...register("phone")}
                 />
@@ -284,12 +309,15 @@ export function Profile() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="country" className="text-sm font-medium text-neutral-800">
+              <label
+                htmlFor="country"
+                className="text-sm font-medium text-neutral-800"
+              >
                 کشور
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
-                  <Globe className="h-[18px] w-[18px] text-neutral-400" />
+                  <Globe className="h-icon-sm w-icon-sm text-neutral-400" />
                 </div>
                 <input
                   id="country"
@@ -305,13 +333,15 @@ export function Profile() {
                       : "cursor-default border-transparent bg-neutral-100/60",
                     errors.country
                       ? "border-error-500 focus:border-error-500 focus:ring-error-500/10"
-                      : "border-neutral-200 hover:border-neutral-300"
+                      : "border-neutral-200 hover:border-neutral-300",
                   )}
                   {...register("country")}
                 />
               </div>
               {errors.country && (
-                <p className="text-xs text-error-500">{errors.country.message}</p>
+                <p className="text-xs text-error-500">
+                  {errors.country.message}
+                </p>
               )}
             </div>
 
@@ -320,9 +350,9 @@ export function Profile() {
                 <Button
                   type="submit"
                   isLoading={isSubmitting}
-                  className="w-full h-12 rounded-xl"
+                  disabled={!isDirty}
+                  className="w-fit"
                 >
-                  <Save className="h-4 w-4" />
                   ذخیره تغییرات
                 </Button>
               </div>
@@ -339,13 +369,27 @@ export function Profile() {
           >
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50">
-                <svg className="h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
+                <svg
+                  className="h-5 w-5 text-primary-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"
+                  />
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-neutral-900">رزروهای من</p>
-                <p className="text-xs text-neutral-400">مشاهده رزروها و سفرها</p>
+                <p className="text-sm font-semibold text-neutral-900">
+                  رزروهای من
+                </p>
+                <p className="text-xs text-neutral-400">
+                  مشاهده رزروها و سفرها
+                </p>
               </div>
             </div>
             <ChevronLeft className="h-5 w-5 text-neutral-400 transition-transform group-hover:-translate-x-1 group-hover:text-primary-500" />
@@ -357,13 +401,27 @@ export function Profile() {
           >
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-error-100/60">
-                <svg className="h-5 w-5 text-error-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                <svg
+                  className="h-5 w-5 text-error-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                  />
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-neutral-900">علاقه‌مندی‌ها</p>
-                <p className="text-xs text-neutral-400">اقامتگاه‌های ذخیره شده</p>
+                <p className="text-sm font-semibold text-neutral-900">
+                  علاقه‌مندی‌ها
+                </p>
+                <p className="text-xs text-neutral-400">
+                  اقامتگاه‌های ذخیره شده
+                </p>
               </div>
             </div>
             <ChevronLeft className="h-5 w-5 text-neutral-400 transition-transform group-hover:-translate-x-1 group-hover:text-primary-500" />

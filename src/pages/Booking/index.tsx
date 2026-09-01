@@ -125,6 +125,11 @@ export function Booking() {
   const subtotal = calculateSubtotal(room.pricePerNight, nights);
   const taxAmount = calculateTaxes(subtotal);
   const total = calculateTotal(subtotal, taxAmount, 0);
+  const guestsCount = draft.adults + draft.children;
+  const capacity = room.maxGuests * draft.rooms;
+  const exceedsCapacity = guestsCount > capacity;
+  const exceedsAvailability = draft.rooms > room.availableRooms;
+  const canSubmit = nights > 0 && !exceedsCapacity && !exceedsAvailability;
 
   function onSubmit(values: GuestInfoFormValues) {
     setDraft({
@@ -247,7 +252,10 @@ export function Booking() {
           >
             <div className="flex items-center gap-3 border-b border-neutral-100 bg-neutral-50/50 px-5 py-4 sm:px-6">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-50">
-                <User className="h-icon-sm w-icon-sm text-primary-600" aria-hidden />
+                <User
+                  className="h-icon-sm w-icon-sm text-primary-600"
+                  aria-hidden
+                />
               </div>
               <div>
                 <h2 className="text-sm font-bold text-neutral-900 sm:text-base">
@@ -423,7 +431,7 @@ export function Booking() {
               <Button
                 type="submit"
                 size="lg"
-                disabled={nights <= 0}
+                disabled={!canSubmit}
                 className="mt-2 w-full rounded-xl"
               >
                 ادامه به پرداخت
@@ -431,6 +439,18 @@ export function Booking() {
               {nights <= 0 && (
                 <p className="text-center text-sm text-error-500">
                   تاریخ خروج باید بعد از تاریخ ورود باشد.
+                </p>
+              )}
+              {exceedsAvailability && (
+                <p className="text-center text-sm text-error-500">
+                  فقط {room.availableRooms} اتاق از این نوع موجوده — تعداد اتاق
+                  درخواستی رو کم کنید.
+                </p>
+              )}
+              {exceedsCapacity && (
+                <p className="text-center text-sm text-error-500">
+                  ظرفیت این اتاق برای {capacity} مهمانه — تعداد مهمانان یا اتاق
+                  رو تنظیم کنید.
                 </p>
               )}
             </div>

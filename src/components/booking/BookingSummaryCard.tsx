@@ -4,6 +4,7 @@ import { formatToman } from "@/utils/currency";
 import {
   Users,
   Moon,
+  BedDouble,
   CreditCard,
 } from "lucide-react";
 
@@ -15,6 +16,7 @@ interface Props {
   nights: number;
   adults: number;
   children: number;
+  rooms: number;
   subtotal: number;
   taxAmount: number;
   discount: number;
@@ -29,6 +31,7 @@ export function BookingSummaryCard({
   nights,
   adults,
   children,
+  rooms,
   subtotal,
   taxAmount,
   discount,
@@ -91,12 +94,24 @@ export function BookingSummaryCard({
               {nights} شب
             </span>
           </div>
+
+          <div className="flex items-center gap-2.5 text-sm">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary-50">
+              <BedDouble className="h-3.5 w-3.5 text-primary-600" aria-hidden />
+            </div>
+            <span className="text-neutral-600">تعداد اتاق</span>
+            <span className="me-auto tabular-nums font-medium text-neutral-900">
+              {rooms} اتاق
+            </span>
+          </div>
         </div>
 
         {/* خلاصه هزینه */}
         <div className="flex flex-col gap-2 border-t border-neutral-100 pt-3">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-neutral-500">جمع اجاره ({nights} شب)</span>
+            <span className="text-neutral-500">
+              جمع اجاره ({nights} شب × {rooms} اتاق)
+            </span>
             <span className="tabular-price font-medium text-neutral-800">
               {formatToman(subtotal)}
             </span>

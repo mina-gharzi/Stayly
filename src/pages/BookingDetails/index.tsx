@@ -9,8 +9,17 @@ import {
   User,
   Receipt,
   Hotel,
+  RotateCcw,
+  CheckCircle2,
+  Clock3,
 } from "lucide-react";
-import { getBookingById, cancelBooking } from "@/services/bookings";
+import {
+  getBookingById,
+  cancelBooking,
+  BookingAccessError,
+  BookingValidationError,
+} from "@/services/bookings";
+import { getCancellationByBookingId } from "@/services/cancellations";
 import { hotels } from "@/data/hotels";
 import { roomTypes } from "@/data/rooms";
 import { Button } from "@/components/ui/Button";
@@ -20,6 +29,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { FadeIn } from "@/components/common/FadeIn";
 import { formatToman } from "@/utils/currency";
 import { useToastStore } from "@/store/toastStore";
+import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/utils/cn";
 
 const statusLabels: Record<
@@ -57,13 +67,27 @@ export function BookingDetails() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const showToast = useToastStore((s) => s.show);
+  const user = useAuthStore((s) => s.user);
   const [modalOpen, setModalOpen] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
 
+  // قانون ۸: فقط رزرو متعلق به کاربر لاگین‌شده باید برگردونده بشه — این صفحه زیر
+  // ProtectedRoute هست، پس user باید موجود باشه، ولی برای اطمینان چک می‌کنیم
   const { data: booking, isLoading } = useQuery({
-    queryKey: ["booking", bookingId],
-    queryFn: () => getBookingById(bookingId!),
-    enabled: !!bookingId,
+    queryKey: ["booking", bookingId, user?.id],
+    queryFn: () => getBookingById(bookingId!, user!.id),
+    enabled: !!bookingId && !!user,
+  });
+
+  // وضعیت واقعی استرداد وجه — از Data Layer، نه فقط پیام گذرا در UI (قانون ۷)
+  const { data: cancellation } = useQuery({
+    queryKey: ["cancellation", bookingId],
+    queryFn: () => getCancellationByBookingId(bookingId!),
+    enabled: !!bookingId && booking?.status === "cancelled",
+    // تا وقتی استرداد تکمیل نشده، هر ۲ ثانیه یک‌بار وضعیتش رو دوباره می‌خونیم تا کاربر
+    // آپدیت رو (بدون رفرش دستی صفحه) ببینه
+    refetchInterval: (query) =>
+      query.state.data?.refundStatus === "completed" ? false : 2000,
   });
 
   if (isLoading) {
@@ -106,13 +130,24 @@ export function BookingDetails() {
     booking.status === "pending" || booking.status === "confirmed";
 
   async function handleConfirmCancel() {
+    if (!user) return;
     setIsCancelling(true);
-    await cancelBooking(booking!.id);
-    await queryClient.invalidateQueries({ queryKey: ["booking", bookingId] });
-    await queryClient.invalidateQueries({ queryKey: ["bookings"] });
-    setIsCancelling(false);
-    setModalOpen(false);
-    showToast("استرداد وجه آغاز شد", "success");
+    try {
+      await cancelBooking(booking!.id, user.id);
+      await queryClient.invalidateQueries({ queryKey: ["booking", bookingId] });
+      await queryClient.invalidateQueries({ queryKey: ["cancellation", bookingId] });
+      await queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      setModalOpen(false);
+      showToast("رزرو لغو شد و فرآیند استرداد وجه آغاز شد", "success");
+    } catch (err) {
+      const message =
+        err instanceof BookingAccessError || err instanceof BookingValidationError
+          ? err.message
+          : "لغو رزرو با مشکل مواجه شد. لطفاً دوباره تلاش کنید.";
+      showToast(message, "error");
+    } finally {
+      setIsCancelling(false);
+    }
   }
 
   return (
@@ -284,6 +319,43 @@ export function BookingDetails() {
               </div>
             </div>
           </Section>
+
+          {/* ── وضعیت استرداد وجه — قانون ۷: داده‌ی واقعی، نه فقط پیام گذرا ── */}
+          {booking.status === "cancelled" && (
+            <Section title="وضعیت استرداد وجه" icon={<RotateCcw className="h-4 w-4" />}>
+              {cancellation ? (
+                <div
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl border p-4",
+                    cancellation.refundStatus === "completed"
+                      ? "border-success-200 bg-success-50"
+                      : "border-warning-200 bg-warning-50"
+                  )}
+                >
+                  {cancellation.refundStatus === "completed" ? (
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-success-500" />
+                  ) : (
+                    <Clock3 className="h-5 w-5 shrink-0 animate-pulse text-warning-500" />
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-neutral-900">
+                      {cancellation.refundStatus === "completed"
+                        ? "استرداد وجه با موفقیت تکمیل شد"
+                        : "استرداد وجه در حال پردازش است"}
+                    </p>
+                    <p className="mt-0.5 text-xs text-neutral-500">
+                      تاریخ لغو:{" "}
+                      <span className="ltr-content">
+                        {new Date(cancellation.cancelledAt).toLocaleString("fa-IR")}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-neutral-500">در حال دریافت وضعیت استرداد...</p>
+              )}
+            </Section>
+          )}
 
           {/* ── دکمه لغو ── */}
           {canCancel && (

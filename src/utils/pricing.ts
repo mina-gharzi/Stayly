@@ -7,8 +7,9 @@ export function calculateNights(checkIn: string, checkOut: string): number {
   return Math.max(0, Math.round(diff / (1000 * 60 * 60 * 24)))
 }
 
-export function calculateSubtotal(pricePerNight: number, nights: number): number {
-  return pricePerNight * nights
+// قانون ۹: قیمت باید بر اساس تعداد شب *و* تعداد اتاق محاسبه بشه — نه فقط شب
+export function calculateSubtotal(pricePerNight: number, nights: number, rooms: number = 1): number {
+  return pricePerNight * nights * rooms
 }
 
 export function calculateTaxes(subtotal: number, taxRate: number = TAX_RATE): number {

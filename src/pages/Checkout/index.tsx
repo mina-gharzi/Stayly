@@ -9,7 +9,8 @@ import { useBookingStore } from '@/store/bookingStore'
 import { useAuthStore } from '@/store/authStore'
 import { mockProcessPayment } from '@/services/payment'
 import { savePayment } from '@/services/payments'
-import { createBooking } from '@/services/bookings'
+import { createBooking, BookingValidationError } from '@/services/bookings'
+import { getRoomById } from '@/services/rooms'
 import { paymentSchema, type PaymentFormValues } from '@/schemas/payment'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -30,6 +31,7 @@ export function Checkout() {
   const user = useAuthStore((s) => s.user)
   const showToast = useToastStore((s) => s.show)
   const [paymentError, setPaymentError] = useState(false)
+  const [availabilityError, setAvailabilityError] = useState<string | null>(null)
 
   // این فرم فقط اطلاعات کارت رو نگه می‌داره — به‌هیچ‌وجه با draft.guestInfo/Zustand قاطی نمی‌شه
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<PaymentFormValues>({
@@ -76,12 +78,35 @@ export function Checkout() {
   }
 
   const nights = calculateNights(draft.checkIn, draft.checkOut)
-  const subtotal = calculateSubtotal(room.pricePerNight, nights)
+  const subtotal = calculateSubtotal(room.pricePerNight, nights, draft.rooms)
   const taxAmount = calculateTaxes(subtotal)
   const total = calculateTotal(subtotal, taxAmount, 0)
 
   async function onSubmit(values: PaymentFormValues) {
     setPaymentError(false)
+    setAvailabilityError(null)
+
+    // قبل از پرداخت، موجودی و ظرفیت رو دوباره چک می‌کنیم — چون ممکنه کاربر مستقیم به این صفحه
+    // اومده باشه (بدون رد شدن از اعتبارسنجی صفحه Booking) یا موجودی از وقتی صفحه رو باز کرده تغییر کرده باشه
+    const latestRoom = await getRoomById(draft.roomTypeId!)
+    if (!latestRoom) {
+      setAvailabilityError('اتاق مورد نظر یافت نشد.')
+      return
+    }
+    if (draft.rooms > latestRoom.availableRooms) {
+      setAvailabilityError(
+        latestRoom.availableRooms > 0
+          ? `فقط ${latestRoom.availableRooms} اتاق از این نوع موجود است.`
+          : 'ظرفیت این نوع اتاق تکمیل شده است.'
+      )
+      return
+    }
+    const guestsCount = draft.adults + draft.children
+    const capacity = latestRoom.maxGuests * draft.rooms
+    if (guestsCount > capacity) {
+      setAvailabilityError(`ظرفیت این تعداد اتاق حداکثر ${capacity} مهمان است.`)
+      return
+    }
 
     const result = await mockProcessPayment({
       cardNumber: values.cardNumber,
@@ -106,31 +131,42 @@ export function Checkout() {
       return
     }
 
-    const booking = await createBooking({
-      userId: user?.id ?? 'guest',
-      hotelId: draft.hotelId!,
-      roomTypeId: draft.roomTypeId!,
-      checkIn: draft.checkIn,
-      checkOut: draft.checkOut,
-      adults: draft.adults,
-      children: draft.children,
-      rooms: draft.rooms,
-      guestInfo: draft.guestInfo!,
-      priceBreakdown: {
-        pricePerNight: room!.pricePerNight,
-        nights,
-        subtotal,
-        taxRate: 0.1,
-        taxAmount,
-        discount: 0,
-        total,
-      },
-      status: 'confirmed',
-      paymentId: payment.id,
-    })
+    try {
+      const booking = await createBooking({
+        userId: user?.id ?? 'guest',
+        hotelId: draft.hotelId!,
+        roomTypeId: draft.roomTypeId!,
+        checkIn: draft.checkIn,
+        checkOut: draft.checkOut,
+        adults: draft.adults,
+        children: draft.children,
+        rooms: draft.rooms,
+        guestInfo: draft.guestInfo!,
+        priceBreakdown: {
+          pricePerNight: room!.pricePerNight,
+          nights,
+          subtotal,
+          taxRate: 0.1,
+          taxAmount,
+          discount: 0,
+          total,
+        },
+        status: 'confirmed',
+        paymentId: payment.id,
+      })
 
-    reset() // پاک کردن Draft بعد از تکمیل موفق رزرو — طبق قانون بخش ۱۰ اسپک
-    navigate(`/confirmation/${booking.id}`)
+      reset() // پاک کردن Draft بعد از تکمیل موفق رزرو — طبق قانون بخش ۱۰ اسپک
+      navigate(`/confirmation/${booking.id}`)
+    } catch (err) {
+      // لایه‌ی دفاعی نهایی: حتی اگه چک بالا رد شده باشه، سرویس createBooking دوباره اعتبارسنجی می‌کنه
+      // (مثلاً وقتی موجودی بین چک بالا و پرداخت توسط کاربر دیگه‌ای مصرف شده باشه)
+      const message =
+        err instanceof BookingValidationError
+          ? err.message
+          : 'ثبت رزرو با مشکل مواجه شد. لطفاً دوباره تلاش کنید.'
+      setAvailabilityError(message)
+      showToast(message, 'error')
+    }
   }
 
   return (
@@ -156,6 +192,13 @@ export function Checkout() {
               <div className="flex items-center gap-2 rounded-md bg-error-100 p-3 text-sm text-error-500">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
                 پرداخت ناموفق بود. لطفاً اطلاعات کارت را بررسی و دوباره تلاش کنید.
+              </div>
+            )}
+
+            {availabilityError && (
+              <div className="flex items-center gap-2 rounded-md bg-error-100 p-3 text-sm text-error-500">
+                <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
+                {availabilityError}
               </div>
             )}
 
@@ -192,6 +235,7 @@ export function Checkout() {
               nights={nights}
               adults={draft.adults}
               children={draft.children}
+              rooms={draft.rooms}
               subtotal={subtotal}
               taxAmount={taxAmount}
               discount={0}

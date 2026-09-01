@@ -122,7 +122,7 @@ export function Booking() {
   }
 
   const nights = calculateNights(draft.checkIn, draft.checkOut);
-  const subtotal = calculateSubtotal(room.pricePerNight, nights);
+  const subtotal = calculateSubtotal(room.pricePerNight, nights, draft.rooms);
   const taxAmount = calculateTaxes(subtotal);
   const total = calculateTotal(subtotal, taxAmount, 0);
   const guestsCount = draft.adults + draft.children;
@@ -468,6 +468,7 @@ export function Booking() {
               nights={nights}
               adults={draft.adults}
               children={draft.children}
+              rooms={draft.rooms}
               subtotal={subtotal}
               taxAmount={taxAmount}
               discount={0}

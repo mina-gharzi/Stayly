@@ -1,13 +1,13 @@
 // src/pages/Favorites/index.tsx
 import { HeartOff } from 'lucide-react'
-import { hotels } from '@/data/hotels'
+import { getHotelsByIdsSync } from '@/services/hotels'
 import { useFavorites } from '@/hooks/useFavorites'
 import { HotelCard } from '@/components/hotel/HotelCard'
 import { FadeIn } from '@/components/common/FadeIn'
 
 export function Favorites() {
   const { favoriteIds, isLoading } = useFavorites()
-  const favoriteHotels = hotels.filter((h) => favoriteIds.includes(h.id))
+  const favoriteHotels = getHotelsByIdsSync(favoriteIds)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">

@@ -1,23 +1,13 @@
 // src/pages/Checkout/index.tsx
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CreditCard, AlertCircle } from 'lucide-react'
-import { useBookingStore } from '@/store/bookingStore'
-import { useAuthStore } from '@/store/authStore'
-import { mockProcessPayment } from '@/services/payment'
-import { savePayment } from '@/services/payments'
-import { createBooking, BookingValidationError } from '@/services/bookings'
-import { getRoomById } from '@/services/rooms'
+import { useCheckout } from '@/hooks/useCheckout'
 import { paymentSchema, type PaymentFormValues } from '@/schemas/payment'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
-import { useToastStore } from '@/store/toastStore'
-import { hotels } from '@/data/hotels'
-import { roomTypes } from '@/data/rooms'
-import { calculateNights, calculateSubtotal, calculateTaxes, calculateTotal } from '@/utils/pricing'
 import { formatToman } from '@/utils/currency'
 import { BookingSummaryCard } from '@/components/booking/BookingSummaryCard'
 import { FadeIn } from '@/components/common/FadeIn'
@@ -27,34 +17,26 @@ export function Checkout() {
   const [searchParams] = useSearchParams()
   const roomTypeId = searchParams.get('roomTypeId') ?? ''
   const navigate = useNavigate()
-  const { draft, setDraft, reset } = useBookingStore()
-  const user = useAuthStore((s) => s.user)
-  const showToast = useToastStore((s) => s.show)
   const [paymentError, setPaymentError] = useState(false)
   const [availabilityError, setAvailabilityError] = useState<string | null>(null)
+
+  const {
+    hotel,
+    room,
+    priceBreakdown,
+    draft,
+    processPaymentAndCreateBooking,
+    isLoading,
+    isError,
+  } = useCheckout(hotelId, roomTypeId)
 
   // این فرم فقط اطلاعات کارت رو نگه می‌داره — به‌هیچ‌وجه با draft.guestInfo/Zustand قاطی نمی‌شه
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
   })
 
-  const hotelQuery = useQuery({ queryKey: ['hotel', hotelId], queryFn: () => hotels.find((h) => h.id === hotelId) ?? null })
-  const roomQuery = useQuery({ queryKey: ['room', roomTypeId], queryFn: () => roomTypes.find((r) => r.id === roomTypeId) ?? null })
-
-  useEffect(() => {
-    if (hotelId && roomTypeId && (draft.hotelId !== hotelId || draft.roomTypeId !== roomTypeId)) {
-      const checkIn = draft.checkIn || new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10)
-      const checkOut = draft.checkOut || new Date(Date.now() + 10 * 86400000).toISOString().slice(0, 10)
-      setDraft({ hotelId, roomTypeId, checkIn, checkOut })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hotelId, roomTypeId])
-
-  const hotel = hotelQuery.data
-  const room = roomQuery.data
-
   // اگه هنوز اطلاعات مسافر (مرحله قبل) کامل نشده، اصلاً نباید به این صفحه برسه
-  if (!draft.hotelId || !draft.roomTypeId || !draft.guestInfo) {
+  if (!hotel || !room || !priceBreakdown) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
         <p className="font-medium text-neutral-900">اطلاعات رزرو ناقص است</p>
@@ -64,11 +46,11 @@ export function Checkout() {
     )
   }
 
-  if (hotelQuery.isLoading || roomQuery.isLoading) {
+  if (isLoading) {
     return <div className="mx-auto max-w-5xl px-4 py-8"><div className="h-48 w-full rounded-2xl bg-neutral-200" /></div>
   }
 
-  if (!hotel || !room) {
+  if (isError || !hotel || !room) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-16 text-center">
         <p className="font-medium text-neutral-900">اتاق یا هتل مورد نظر یافت نشد</p>
@@ -77,96 +59,24 @@ export function Checkout() {
     )
   }
 
-  const nights = calculateNights(draft.checkIn, draft.checkOut)
-  const subtotal = calculateSubtotal(room.pricePerNight, nights, draft.rooms)
-  const taxAmount = calculateTaxes(subtotal)
-  const total = calculateTotal(subtotal, taxAmount, 0)
+  const { nights, subtotal, taxAmount, total } = priceBreakdown
 
   async function onSubmit(values: PaymentFormValues) {
     setPaymentError(false)
     setAvailabilityError(null)
 
-    // قبل از پرداخت، موجودی و ظرفیت رو دوباره چک می‌کنیم — چون ممکنه کاربر مستقیم به این صفحه
-    // اومده باشه (بدون رد شدن از اعتبارسنجی صفحه Booking) یا موجودی از وقتی صفحه رو باز کرده تغییر کرده باشه
-    const latestRoom = await getRoomById(draft.roomTypeId!)
-    if (!latestRoom) {
-      setAvailabilityError('اتاق مورد نظر یافت نشد.')
-      return
-    }
-    if (draft.rooms > latestRoom.availableRooms) {
-      setAvailabilityError(
-        latestRoom.availableRooms > 0
-          ? `فقط ${latestRoom.availableRooms} اتاق از این نوع موجود است.`
-          : 'ظرفیت این نوع اتاق تکمیل شده است.'
-      )
-      return
-    }
-    const guestsCount = draft.adults + draft.children
-    const capacity = latestRoom.maxGuests * draft.rooms
-    if (guestsCount > capacity) {
-      setAvailabilityError(`ظرفیت این تعداد اتاق حداکثر ${capacity} مهمان است.`)
+    const result = await processPaymentAndCreateBooking(values)
+
+    if (!result.success) {
+      if (result.error?.includes('ظرفیت') || result.error?.includes('مهمان') || result.error?.includes('اتاق')) {
+        setAvailabilityError(result.error)
+      } else {
+        setPaymentError(true)
+      }
       return
     }
 
-    const result = await mockProcessPayment({
-      cardNumber: values.cardNumber,
-      cardHolder: values.cardHolder,
-      expiry: values.expiry,
-      cvv: values.cvv,
-      amount: total,
-    })
-
-    // رکورد Payment همیشه ذخیره می‌شه (چه موفق چه ناموفق) — برای تاریخچه
-    const payment = await savePayment({
-      bookingId: '',
-      status: result.status,
-      cardLast4: result.cardLast4,
-      amount: total,
-      processedAt: new Date().toISOString(),
-    })
-
-    if (result.status === 'failed') {
-      setPaymentError(true)
-      showToast('پرداخت ناموفق بود. لطفاً اطلاعات کارت را بررسی و دوباره تلاش کنید.', 'error')
-      return
-    }
-
-    try {
-      const booking = await createBooking({
-        userId: user?.id ?? 'guest',
-        hotelId: draft.hotelId!,
-        roomTypeId: draft.roomTypeId!,
-        checkIn: draft.checkIn,
-        checkOut: draft.checkOut,
-        adults: draft.adults,
-        children: draft.children,
-        rooms: draft.rooms,
-        guestInfo: draft.guestInfo!,
-        priceBreakdown: {
-          pricePerNight: room!.pricePerNight,
-          nights,
-          subtotal,
-          taxRate: 0.1,
-          taxAmount,
-          discount: 0,
-          total,
-        },
-        status: 'confirmed',
-        paymentId: payment.id,
-      })
-
-      reset() // پاک کردن Draft بعد از تکمیل موفق رزرو — طبق قانون بخش ۱۰ اسپک
-      navigate(`/confirmation/${booking.id}`)
-    } catch (err) {
-      // لایه‌ی دفاعی نهایی: حتی اگه چک بالا رد شده باشه، سرویس createBooking دوباره اعتبارسنجی می‌کنه
-      // (مثلاً وقتی موجودی بین چک بالا و پرداخت توسط کاربر دیگه‌ای مصرف شده باشه)
-      const message =
-        err instanceof BookingValidationError
-          ? err.message
-          : 'ثبت رزرو با مشکل مواجه شد. لطفاً دوباره تلاش کنید.'
-      setAvailabilityError(message)
-      showToast(message, 'error')
-    }
+    navigate(`/confirmation/${result.bookingId}`)
   }
 
   return (

@@ -81,3 +81,30 @@ export function getHotelById(id: string): Promise<Hotel | undefined> {
     setTimeout(() => resolve(hotels.find((h) => h.id === id)), 300)
   })
 }
+
+// حل‌کردن گروهی شناسه‌های هتل به آبجکت کامل — مثلاً برای صفحه علاقه‌مندی‌ها
+export function getHotelsByIds(ids: string[]): Promise<Hotel[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(ids.map((id) => hotels.find((h) => h.id === id)).filter((h): h is Hotel => !!h))
+    }, 200)
+  })
+}
+
+// تعداد اقامتگاه‌ها به تفکیک نوع اقامتگاه — برای «جستجو بر اساس نوع اقامتگاه»
+export function getHotelCountsByType(): Promise<Record<PropertyType, number>> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const counts = {
+        hotel: 0,
+        resort: 0,
+        apartment: 0,
+        villa: 0,
+        hostel: 0,
+        boutique: 0,
+      } as Record<PropertyType, number>
+      for (const h of hotels) counts[h.propertyType] += 1
+      resolve(counts)
+    }, 200)
+  })
+}

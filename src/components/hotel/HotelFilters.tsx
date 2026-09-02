@@ -11,8 +11,7 @@ import {
   RotateCcw,
   type LucideIcon,
 } from "lucide-react";
-import { cities } from "@/data/cities";
-import { amenities } from "@/data/amenities";
+import { getCities, getAmenities } from "@/services/catalog";
 import type { PropertyType } from "@/types";
 import { formatToman } from "@/utils/currency";
 import type { HotelSearchFilters } from "@/services/hotels";
@@ -90,6 +89,8 @@ function FilterGroup({
 
 export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const allCities = getCities();
+  const allAmenities = getAmenities();
 
   function toggleInCsv(current: string[], value: string, key: string) {
     const next = current.includes(value)
@@ -255,7 +256,7 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
           {/* مقصد */}
           <FilterGroup id="destination" title="مقصد" icon={MapPin}>
             <div className="flex flex-col gap-1">
-              {cities.map((city) => (
+              {allCities.map((city) => (
                 <label
                   key={city.id}
                   className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm text-neutral-800 transition-colors hover:bg-neutral-50"
@@ -281,7 +282,7 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
           {/* امکانات */}
           <FilterGroup id="amenities" title="امکانات" icon={Sparkles}>
             <div className="flex flex-col gap-1">
-              {amenities.map((amenity) => (
+              {allAmenities.map((amenity) => (
                 <label
                   key={amenity.id}
                   className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm text-neutral-800 transition-colors hover:bg-neutral-50"

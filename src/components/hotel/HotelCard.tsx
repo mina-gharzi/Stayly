@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
 import type { Hotel } from "@/types";
-import { cities } from "@/data/cities";
+import { getCityById } from "@/services/catalog";
 import { Card } from "@/components/ui/Card";
 import { formatToman } from "@/utils/currency";
 import { FavoriteButton } from "./FavoriteButton";
@@ -23,7 +23,7 @@ export function HotelCard({
   hotel: Hotel;
   layout?: "grid" | "list";
 }) {
-  const city = cities.find((c) => c.id === hotel.cityId);
+  const city = getCityById(hotel.cityId);
 
   /* حالت افقی — برای صفحه نتایج */
   if (layout === "list") {

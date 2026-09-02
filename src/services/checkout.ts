@@ -5,6 +5,7 @@
 import type { Booking, GuestInfo, Payment, PriceBreakdown } from '@/types'
 import { processPayment, savePayment, updatePaymentBookingId } from './payments'
 import { createBooking, BookingValidationError } from './bookings'
+import { calculateRoomBookingTotal } from './rooms'
 
 export class PaymentFailedError extends Error {
   constructor(message: string = 'پرداخت ناموفق بود. لطفاً اطلاعات کارت را بررسی و دوباره تلاش کنید.') {
@@ -47,12 +48,22 @@ export interface SubmitBookingPaymentResult {
 export async function submitBookingPayment(
   input: SubmitBookingPaymentInput
 ): Promise<SubmitBookingPaymentResult> {
+  // مرجعیت قیمت‌گذاری — قانون: به priceBreakdownِ ارسالیِ Client اعتماد نمی‌کنیم.
+  // Service خودش قیمت واقعی رو از منبع معتبر (قیمت اتاق + قوانین Pricing) دوباره محاسبه
+  // می‌کنه و همون مبلغ رو به Payment می‌ده؛ و همین نسخه‌ی معتبر رو هم در رزرو ذخیره می‌کنه.
+  const authoritative = calculateRoomBookingTotal({
+    roomTypeId: input.roomTypeId,
+    checkIn: input.checkIn,
+    checkOut: input.checkOut,
+    rooms: input.rooms,
+  })
+
   const result = await processPayment({
     cardNumber: input.card.cardNumber,
     cardHolder: input.card.cardHolder,
     expiry: input.card.expiry,
     cvv: input.card.cvv,
-    amount: input.priceBreakdown.total,
+    amount: authoritative.total,
   })
 
   // رکورد Payment همیشه ذخیره می‌شه (چه موفق چه ناموفق) — برای تاریخچه‌ی پرداخت
@@ -60,7 +71,7 @@ export async function submitBookingPayment(
     bookingId: '',
     status: result.status,
     cardLast4: result.cardLast4,
-    amount: input.priceBreakdown.total,
+    amount: authoritative.total,
     processedAt: new Date().toISOString(),
   })
 
@@ -78,7 +89,7 @@ export async function submitBookingPayment(
     children: input.children,
     rooms: input.rooms,
     guestInfo: input.guestInfo,
-    priceBreakdown: input.priceBreakdown,
+    priceBreakdown: authoritative,
     status: 'confirmed',
     paymentId: payment.id,
   })

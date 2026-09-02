@@ -9,7 +9,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FadeIn } from "@/components/common/FadeIn";
-import { cities } from "@/data/cities";
+import { getCityById } from "@/services/catalog";
 
 export function Hotels() {
   const { filters, updateParams, data, isLoading, isError, refetch } =
@@ -17,7 +17,7 @@ export function Hotels() {
 
   const destinationLabel =
     filters.destination?.length === 1
-      ? cities.find((c) => c.id === filters.destination![0])?.name
+      ? getCityById(filters.destination![0])?.name
       : filters.destination?.length
         ? `${filters.destination.length} مقصد`
         : "همه مقصدها";

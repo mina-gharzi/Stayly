@@ -1,17 +1,9 @@
 // src/pages/About/index.tsx
 import { Link } from "react-router-dom";
 import { Globe2, ShieldCheck, HeartHandshake, ArrowLeft } from "lucide-react";
-import { hotels } from "@/data/hotels";
-import { cities } from "@/data/cities";
-import { reviews } from "@/data/reviews";
+import { useCatalogStats } from "@/hooks/useCatalog";
 import { FadeIn } from "@/components/common/FadeIn";
 import aboutHeroImg from "@/assets/about-us.webp";
-
-const stats = [
-  { label: "اقامتگاه", value: hotels.length },
-  { label: "مقصد", value: cities.length },
-  { label: "نظر ثبت‌شده", value: reviews.length },
-];
 
 const values = [
   {
@@ -32,6 +24,13 @@ const values = [
 ];
 
 export function About() {
+  const { data } = useCatalogStats();
+  const stats = [
+    { label: "اقامتگاه", value: data?.hotels ?? 0 },
+    { label: "مقصد", value: data?.cities ?? 0 },
+    { label: "نظر ثبت‌شده", value: data?.reviews ?? 0 },
+  ];
+
   return (
     <div className="min-h-screen bg-neutral-100/60">
       {/* ═══ هیرو + آمار شناور ═══ */}

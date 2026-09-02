@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { GuestInfo } from '@/types'
 
-export interface BookingDraft {
+interface BookingDraft {
   hotelId: string | null
   roomTypeId: string | null
   checkIn: string

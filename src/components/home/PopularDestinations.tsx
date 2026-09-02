@@ -1,11 +1,11 @@
 // src/components/home/PopularDestinations.tsx
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { cities } from "@/data/cities";
+import { getCities } from "@/services/catalog";
 import { FadeIn } from "@/components/common/FadeIn";
 
 export function PopularDestinations() {
-  const displayCities = cities.slice(0, 5);
+  const displayCities = getCities().slice(0, 5);
 
   return (
     <section className="bg-neutral-100/60">

@@ -1,14 +1,14 @@
 // src/components/home/FeaturedHotels.tsx
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { hotels } from "@/data/hotels";
+import { useFeaturedHotels } from "@/hooks/useCatalog";
 import { HotelCard } from "@/components/hotel/HotelCard";
+import { HotelCardSkeleton } from "@/components/hotel/HotelCardSkeleton";
 import { FadeIn } from "@/components/common/FadeIn";
 
 export function FeaturedHotels() {
-  const featured = [...hotels]
-    .sort((a, b) => b.guestRating - a.guestRating)
-    .slice(0, 6);
+  const { data, isLoading } = useFeaturedHotels();
+  const featured = data?.data ?? [];
 
   return (
     <section className="bg-neutral-100/60">
@@ -27,6 +27,12 @@ export function FeaturedHotels() {
 
             {/* گرید کارتها — موبایل ۳ تا، از sm به بالا ۶ تا */}
             <div className="mt-8 grid grid-cols-1 gap-5 sm:mt-10 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+              {isLoading &&
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="h-full">
+                    <HotelCardSkeleton />
+                  </div>
+                ))}
               {featured.map((hotel, index) => (
                 <FadeIn
                   key={hotel.id}

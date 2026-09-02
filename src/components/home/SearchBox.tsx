@@ -2,12 +2,13 @@
 import { useState, useRef, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, MapPin, ChevronDown, ChevronLeft } from "lucide-react";
-import { cities } from "@/data/cities";
+import { getCities } from "@/services/catalog";
 import { Button } from "@/components/ui/Button";
 
 export function SearchBox() {
   const navigate = useNavigate();
-  const [destination, setDestination] = useState(cities[0]?.id ?? "");
+  const allCities = getCities();
+  const [destination, setDestination] = useState(allCities[0]?.id ?? "");
   const cityRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   function selectCity(id: string) {
@@ -28,8 +29,8 @@ export function SearchBox() {
     navigate(`/hotels?${params.toString()}`);
   }
 
-  const popularCities = cities.slice(0, 5);
-  const selectedCity = cities.find((c) => c.id === destination);
+  const popularCities = allCities.slice(0, 5);
+  const selectedCity = allCities.find((c) => c.id === destination);
 
   return (
     <div className="relative flex w-full max-w-8xl items-center justify-center">

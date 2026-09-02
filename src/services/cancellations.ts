@@ -48,7 +48,7 @@ export function getCancellationByBookingId(bookingId: string): Cancellation | un
   return getAll().find((c) => c.bookingId === bookingId)
 }
 
-export function markRefundCompleted(bookingId: string): Cancellation | undefined {
+function markRefundCompleted(bookingId: string): Cancellation | undefined {
   const all = getAll()
   const index = all.findIndex((c) => c.bookingId === bookingId)
   if (index === -1) return undefined

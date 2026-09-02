@@ -2,7 +2,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Star, MapPin, Clock, SearchX, BedDouble } from "lucide-react";
 import { useHotelDetails } from "@/hooks/useHotelDetails";
-import { cities } from "@/data/cities";
+import { getCityById } from "@/services/catalog";
 import { ImageGallery } from "@/components/hotel/ImageGallery";
 import { AmenitiesList } from "@/components/hotel/AmenitiesList";
 import { LocationPreview } from "@/components/hotel/LocationPreview";
@@ -78,7 +78,7 @@ export function HotelDetails() {
     );
   }
 
-  const city = cities.find((c) => c.id === hotel.cityId);
+  const city = getCityById(hotel.cityId);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">

@@ -1,7 +1,7 @@
 // src/components/layout/Footer.tsx
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, ArrowLeft } from "lucide-react";
-import { cities } from "@/data/cities";
+import { getCities } from "@/services/catalog";
 
 const exploreLinks = [
   { label: "جستجوی هتل‌ها", to: "/hotels" },
@@ -94,7 +94,7 @@ function FooterLink({
 }
 
 export function Footer() {
-  const topCities = cities.slice(0, 5);
+  const topCities = getCities().slice(0, 5);
 
   return (
     <footer className="relative border-t border-neutral-200 bg-neutral-50">

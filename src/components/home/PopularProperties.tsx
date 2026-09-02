@@ -9,7 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
-import { hotels } from "@/data/hotels";
+import { useHotelCountsByType } from "@/hooks/useCatalog";
 import { FadeIn } from "@/components/common/FadeIn";
 import type { PropertyType } from "@/types";
 import type { LucideIcon } from "lucide-react";
@@ -27,6 +27,7 @@ const propertyTypeConfig: Record<
 };
 
 export function PopularProperties() {
+  const { data: counts } = useHotelCountsByType();
   const types = Object.keys(propertyTypeConfig) as PropertyType[];
 
   return (
@@ -48,9 +49,7 @@ export function PopularProperties() {
             <div className="mt-8 grid grid-cols-2 gap-4 sm:mt-10 sm:grid-cols-3 lg:grid-cols-6">
               {types.map((type, index) => {
                 const config = propertyTypeConfig[type];
-                const count = hotels.filter(
-                  (h) => h.propertyType === type,
-                ).length;
+                const count = counts?.[type] ?? 0;
                 const Icon = config.icon;
 
                 return (

@@ -1,7 +1,7 @@
 // src/pages/Favorites/index.tsx
 import { HeartOff } from 'lucide-react'
-import { hotels } from '@/data/hotels'
 import { useFavorites } from '@/hooks/useFavorites'
+import { useHotelsByIds } from '@/hooks/useCatalog'
 import { HotelCard } from '@/components/hotel/HotelCard'
 import { FadeIn } from '@/components/common/FadeIn'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -10,7 +10,15 @@ import { Link } from 'react-router-dom'
 
 export function Favorites() {
   const { favoriteIds, isLoading, isError, refetch } = useFavorites()
-  const favoriteHotels = hotels.filter((h) => favoriteIds.includes(h.id))
+  const hotelsQuery = useHotelsByIds(favoriteIds)
+  const favoriteHotels = hotelsQuery.data ?? []
+
+  const combinedLoading = isLoading || hotelsQuery.isLoading
+  const combinedError = isError || hotelsQuery.isError
+  const handleRetry = () => {
+    refetch()
+    hotelsQuery.refetch()
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
@@ -18,18 +26,18 @@ export function Favorites() {
         <h1 className="text-2xl font-bold text-neutral-900">علاقه‌مندی‌های من</h1>
       </FadeIn>
 
-      {isLoading && <p className="mt-6 text-sm text-neutral-600">در حال بارگذاری...</p>}
+      {combinedLoading && <p className="mt-6 text-sm text-neutral-600">در حال بارگذاری...</p>}
 
-      {isError && !isLoading && (
+      {combinedError && !combinedLoading && (
         <div className="mt-6">
           <ErrorState
             description="در دریافت علاقه‌مندی‌ها خطایی رخ داد."
-            onRetry={() => refetch()}
+            onRetry={handleRetry}
           />
         </div>
       )}
 
-      {!isLoading && !isError && favoriteHotels.length === 0 && (
+      {!combinedLoading && !combinedError && favoriteHotels.length === 0 && (
         <FadeIn delay={100}>
           <div className="mt-6">
             <EmptyState

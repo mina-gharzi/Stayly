@@ -1,6 +1,7 @@
 // src/services/rooms.ts
 import { roomTypes } from '@/data/rooms'
-import type { RoomType } from '@/types'
+import { TAX_RATE, calculateNights, calculateSubtotal, calculateTaxes, calculateDiscount, calculateTotal } from '@/utils/pricing'
+import type { RoomType, PriceBreakdown } from '@/types'
 
 // کلید ذخیره‌سازی موجودی مصرف‌شده اتاق‌ها در Mock API (شبیه‌سازی به‌روزرسانی موجودی بعد از رزرو)
 const AVAILABILITY_KEY = 'stayly-room-availability-overrides'
@@ -44,6 +45,37 @@ export function getRoomById(roomId: string): Promise<RoomType | undefined> {
 export function getRoomByIdSync(roomId: string): RoomType | undefined {
   const room = roomTypes.find((r) => r.id === roomId)
   return room ? applyAvailabilityOverride(room) : undefined
+}
+
+// مرجعیت قیمت‌گذاری — قانون: Service نباید به priceBreakdownِ ارسالیِ Client اعتماد کنه.
+// این تابع قیمت واقعی رزرو رو مستقیم از منبع معتبر (قیمت اتاق + قوانین Pricing) دوباره
+// محاسبه می‌کنه تا مبلغ پرداخت همیشه درست باشه — نه چیزی که فرم Checkout فرستاده.
+export function calculateRoomBookingTotal(input: {
+  roomTypeId: string
+  checkIn: string
+  checkOut: string
+  rooms: number
+}): PriceBreakdown {
+  const room = getRoomByIdSync(input.roomTypeId)
+  if (!room) {
+    return {
+      pricePerNight: 0,
+      nights: 0,
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      discount: 0,
+      total: 0,
+    }
+  }
+  const nights = calculateNights(input.checkIn, input.checkOut)
+  const subtotal = calculateSubtotal(room.pricePerNight, nights, input.rooms)
+  const taxAmount = calculateTaxes(subtotal)
+  const discount = calculateDiscount(subtotal)
+  const taxRate = TAX_RATE
+  const total = calculateTotal(subtotal, taxAmount, discount)
+
+  return { pricePerNight: room.pricePerNight, nights, subtotal, taxRate, taxAmount, discount, total }
 }
 
 // کم‌کردن موجودی بعد از رزرو موفق (شبیه‌سازی به‌روزرسانی Mock API)

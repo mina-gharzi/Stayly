@@ -1,9 +1,9 @@
 // src/components/hotel/AmenitiesList.tsx
-import { amenities as allAmenities } from "@/data/amenities";
+import { getAmenitiesByIds } from "@/services/catalog";
 import { amenityIconMap } from "@/utils/amenityIcons";
 
 export function AmenitiesList({ amenityIds }: { amenityIds: string[] }) {
-  const items = allAmenities.filter((a) => amenityIds.includes(a.id));
+  const items = getAmenitiesByIds(amenityIds);
 
   if (items.length === 0) return null;
 

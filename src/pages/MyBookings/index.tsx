@@ -15,6 +15,8 @@ import { getBookingsByUser } from "@/services/bookings";
 import { BookingCard } from "@/components/booking/BookingCard";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { FadeIn } from "@/components/common/FadeIn";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { cn } from "@/utils/cn";
 import type { Booking } from "@/types";
 
@@ -48,7 +50,7 @@ export function MyBookings() {
   const user = useAuthStore((s) => s.user);
   const [activeTab, setActiveTab] = useState("upcoming");
 
-  const { data: bookings, isLoading } = useQuery({
+  const { data: bookings, isLoading, isError, refetch } = useQuery({
     queryKey: ["bookings", user?.id],
     queryFn: () => getBookingsByUser(user!.id),
     enabled: !!user,
@@ -124,7 +126,7 @@ export function MyBookings() {
                 className={cn(
                   "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200",
                   activeTab === tab.key
-                    ? "bg-primary-700 text-white shadow-sm"
+                    ? "bg-primary-700 text-white shadow-soft"
                     : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-800"
                 )}
               >
@@ -164,33 +166,36 @@ export function MyBookings() {
             </div>
           ))}
 
-        {!isLoading && filtered.length === 0 && (
-          <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-neutral-200 bg-white py-16">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-neutral-100">
-              <CalendarX className="h-7 w-7 text-neutral-400" />
-            </div>
-            <div className="text-center">
-              <p className="font-semibold text-neutral-800">
-                رزروی یافت نشد
-              </p>
-              <p className="mt-1 text-sm text-neutral-400">
-                {activeTab === "upcoming"
-                  ? "هنوز رزروی انجام نداده‌اید"
-                  : activeTab === "completed"
-                    ? "رزرو انجام شده‌ای ندارید"
-                    : "رزرو لغو شده‌ای ندارید"}
-              </p>
-            </div>
-            {activeTab === "upcoming" && (
-              <Link
-                to="/hotels"
-                className="flex items-center gap-2 rounded-xl bg-primary-700 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-900 active:scale-[0.98]"
-              >
-                <Search className="h-4 w-4" />
-                جستجوی اقامتگاه
-              </Link>
-            )}
-          </div>
+        {isError && !isLoading && (
+          <ErrorState
+            description="در دریافت رزروهای شما خطایی رخ داد."
+            onRetry={() => refetch()}
+          />
+        )}
+
+        {!isLoading && !isError && filtered.length === 0 && (
+          <EmptyState
+            icon={CalendarX}
+            title="رزروی یافت نشد"
+            description={
+              activeTab === "upcoming"
+                ? "هنوز رزروی انجام نداده‌اید"
+                : activeTab === "completed"
+                  ? "رزرو انجام شده‌ای ندارید"
+                  : "رزرو لغو شده‌ای ندارید"
+            }
+            action={
+              activeTab === "upcoming" ? (
+                <Link
+                  to="/hotels"
+                  className="flex items-center gap-2 rounded-xl bg-primary-700 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-900 active:scale-[0.98]"
+                >
+                  <Search className="h-4 w-4" />
+                  جستجوی اقامتگاه
+                </Link>
+              ) : undefined
+            }
+          />
         )}
 
         {!isLoading &&

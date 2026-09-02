@@ -29,11 +29,12 @@ export function GuestInfoFields({ register, errors }: GuestInfoFieldsProps) {
               type="text"
               placeholder="نام"
               aria-invalid={!!errors.firstName}
+              aria-describedby={errors.firstName ? "firstName-error" : undefined}
               className={cn(pillInput, errors.firstName && "border-error-500 focus:border-error-500 focus:ring-error-500/10")}
               {...register("firstName")}
             />
           </div>
-          {errors.firstName && <p className="text-xs text-error-500">{errors.firstName.message}</p>}
+          {errors.firstName && <p id="firstName-error" className="text-xs text-error-500">{errors.firstName.message}</p>}
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -47,11 +48,12 @@ export function GuestInfoFields({ register, errors }: GuestInfoFieldsProps) {
               type="text"
               placeholder="نام خانوادگی"
               aria-invalid={!!errors.lastName}
+              aria-describedby={errors.lastName ? "lastName-error" : undefined}
               className={cn(pillInput, errors.lastName && "border-error-500 focus:border-error-500 focus:ring-error-500/10")}
               {...register("lastName")}
             />
           </div>
-          {errors.lastName && <p className="text-xs text-error-500">{errors.lastName.message}</p>}
+          {errors.lastName && <p id="lastName-error" className="text-xs text-error-500">{errors.lastName.message}</p>}
         </div>
       </div>
 
@@ -67,11 +69,12 @@ export function GuestInfoFields({ register, errors }: GuestInfoFieldsProps) {
             dir="ltr"
             placeholder="email@example.com"
             aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
             className={cn(pillInput, errors.email && "border-error-500 focus:border-error-500 focus:ring-error-500/10")}
             {...register("email")}
           />
         </div>
-        {errors.email && <p className="text-xs text-error-500">{errors.email.message}</p>}
+        {errors.email && <p id="email-error" className="text-xs text-error-500">{errors.email.message}</p>}
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -86,11 +89,12 @@ export function GuestInfoFields({ register, errors }: GuestInfoFieldsProps) {
             dir="ltr"
             placeholder="09123456789"
             aria-invalid={!!errors.phone}
+            aria-describedby={errors.phone ? "phone-error" : undefined}
             className={cn(pillInput, errors.phone && "border-error-500 focus:border-error-500 focus:ring-error-500/10")}
             {...register("phone")}
           />
         </div>
-        {errors.phone && <p className="text-xs text-error-500">{errors.phone.message}</p>}
+        {errors.phone && <p id="phone-error" className="text-xs text-error-500">{errors.phone.message}</p>}
       </div>
 
       <div className="flex flex-col gap-1.5">

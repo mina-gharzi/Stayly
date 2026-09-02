@@ -1,22 +1,24 @@
 // src/pages/Checkout/index.tsx
 // قانون ۱۲: این صفحه دیگه مسئول Pricing/Payment/Booking Creation/Navigation نیست —
 // همه‌ی اون منطق داخل useCheckout و services/checkout.ts متمرکز شده. اینجا فقط فرم و UI هست.
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CreditCard, AlertCircle } from 'lucide-react'
+import { CreditCard, AlertCircle, Search } from 'lucide-react'
 import { useCheckout } from '@/hooks/useCheckout'
 import { paymentSchema, type PaymentFormValues } from '@/schemas/payment'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { formatToman } from '@/utils/currency'
 import { BookingSummaryCard } from '@/components/booking/BookingSummaryCard'
 import { FadeIn } from '@/components/common/FadeIn'
 
 export function Checkout() {
-  const { hotelId } = useParams<{ hotelId: string }>()
   const [searchParams] = useSearchParams()
+  const hotelId = searchParams.get('hotelId') ?? ''
   const roomTypeId = searchParams.get('roomTypeId') ?? ''
   const navigate = useNavigate()
 
@@ -28,6 +30,7 @@ export function Checkout() {
     isError,
     notFound,
     draftIncomplete,
+    refetch,
     nights,
     subtotal,
     taxAmount,
@@ -67,10 +70,11 @@ export function Checkout() {
   // ── حالت خطا (مثلاً سرویس نتونست اطلاعات هتل/اتاق رو بگیره) ──
   if (isError) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-16 text-center">
-        <p className="font-medium text-neutral-900">مشکلی در دریافت اطلاعات پیش آمد</p>
-        <p className="mt-1 text-sm text-neutral-600">لطفاً دوباره تلاش کنید.</p>
-        <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>تلاش دوباره</Button>
+      <div className="mx-auto max-w-5xl px-4 py-16">
+        <ErrorState
+          description="لطفاً دوباره تلاش کنید."
+          onRetry={() => refetch()}
+        />
       </div>
     )
   }
@@ -78,9 +82,17 @@ export function Checkout() {
   // ── حالت خالی (هتل/اتاق پیدا نشد) ──
   if (notFound || !hotel || !room) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-16 text-center">
-        <p className="font-medium text-neutral-900">اتاق یا هتل مورد نظر یافت نشد</p>
-        <Button variant="outline" className="mt-4" onClick={() => navigate('/hotels')}>بازگشت به جستجو</Button>
+      <div className="mx-auto max-w-5xl px-4 py-16">
+        <EmptyState
+          icon={Search}
+          title="اتاق یا هتل مورد نظر یافت نشد"
+          description="لطفاً از صفحه جستجو اقامتگاه دیگری را انتخاب کنید."
+          action={
+            <Button variant="outline" onClick={() => navigate('/hotels')}>
+              بازگشت به جستجو
+            </Button>
+          }
+        />
       </div>
     )
   }
@@ -123,7 +135,7 @@ export function Checkout() {
               error={errors.cardNumber?.message}
             />
             <Input label="نام دارنده کارت" {...register('cardHolder')} error={errors.cardHolder?.message} />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input label="تاریخ انقضا" placeholder="MM/YY" className="ltr-content" {...register('expiry')} error={errors.expiry?.message} />
               <Input label="CVV" className="ltr-content" {...register('cvv')} error={errors.cvv?.message} />
             </div>

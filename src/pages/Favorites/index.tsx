@@ -4,9 +4,12 @@ import { hotels } from '@/data/hotels'
 import { useFavorites } from '@/hooks/useFavorites'
 import { HotelCard } from '@/components/hotel/HotelCard'
 import { FadeIn } from '@/components/common/FadeIn'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { Link } from 'react-router-dom'
 
 export function Favorites() {
-  const { favoriteIds, isLoading } = useFavorites()
+  const { favoriteIds, isLoading, isError, refetch } = useFavorites()
   const favoriteHotels = hotels.filter((h) => favoriteIds.includes(h.id))
 
   return (
@@ -17,12 +20,31 @@ export function Favorites() {
 
       {isLoading && <p className="mt-6 text-sm text-neutral-600">در حال بارگذاری...</p>}
 
-      {!isLoading && favoriteHotels.length === 0 && (
+      {isError && !isLoading && (
+        <div className="mt-6">
+          <ErrorState
+            description="در دریافت علاقه‌مندی‌ها خطایی رخ داد."
+            onRetry={() => refetch()}
+          />
+        </div>
+      )}
+
+      {!isLoading && !isError && favoriteHotels.length === 0 && (
         <FadeIn delay={100}>
-          <div className="mt-16 flex flex-col items-center gap-2 text-center">
-            <HeartOff className="h-8 w-8 text-neutral-400" aria-hidden />
-            <p className="font-medium text-neutral-900">هنوز هتلی به علاقه‌مندی‌ها اضافه نکرده‌اید</p>
-            <p className="text-sm text-neutral-600">با کلیک روی آیکون قلب روی هر هتل، آن را اینجا ذخیره کنید.</p>
+          <div className="mt-6">
+            <EmptyState
+              icon={HeartOff}
+              title="هنوز هتلی به علاقه‌مندی‌ها اضافه نکرده‌اید"
+              description="با کلیک روی آیکون قلب روی هر هتل، آن را اینجا ذخیره کنید."
+              action={
+                <Link
+                  to="/hotels"
+                  className="inline-flex h-11 items-center justify-center rounded-xl bg-primary-700 px-5 text-sm font-medium text-white transition-colors hover:bg-primary-900"
+                >
+                  جستجوی اقامتگاه
+                </Link>
+              }
+            />
           </div>
         </FadeIn>
       )}

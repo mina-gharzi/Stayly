@@ -114,7 +114,7 @@ export function Footer() {
                 Stay<span className="text-primary-600">ly</span>
               </span>
             </Link>
-            <p className="mt-2 whitespace-nowrap text-xs leading-5 text-neutral-500 sm:whitespace-normal sm:mt-3 sm:max-w-65 sm:text-sm sm:leading-6">
+            <p className="mt-2 max-w-72 whitespace-normal text-xs leading-5 text-neutral-500 sm:mt-3 sm:max-w-65 sm:text-sm sm:leading-6">
               پیدا کردن، مقایسه و رزرو بهترین اقامتگاه‌ها در مقصدهای محبوب.
             </p>
 

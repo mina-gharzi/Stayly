@@ -144,7 +144,7 @@ export function Booking() {
     setDraft({
       guestInfo: { ...values, specialRequests: values.specialRequests ?? "" },
     });
-    navigate("/checkout");
+    navigate(`/checkout?hotelId=${encodeURIComponent(hotelId ?? "")}&roomTypeId=${encodeURIComponent(roomTypeId)}`);
   }
 
   return (
@@ -156,11 +156,11 @@ export function Booking() {
             <ClipboardList className="h-5 w-5 text-primary-600 sm:h-6 sm:w-6" aria-hidden />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-neutral-900 sm:text-2xl">
+            <h1 className="text-2xl font-bold text-neutral-900">
               تکمیل اطلاعات رزرو
             </h1>
             <p className="text-sm text-neutral-500">
-              اطلاعات اقامت و مسافر رو تکمیل کن تا بریم مرحله پرداخت
+              اطلاعات اقامت و مسافر را تکمیل کنید تا به مرحله پرداخت برویم
             </p>
           </div>
         </div>
@@ -214,14 +214,14 @@ export function Booking() {
               )}
               {exceedsAvailability && (
                 <p className="text-center text-sm text-error-500">
-                  فقط {room.availableRooms} اتاق از این نوع موجوده — تعداد اتاق
-                  درخواستی رو کم کنید.
+                  فقط {room.availableRooms} اتاق از این نوع موجود است — تعداد اتاق
+                  درخواستی را کاهش دهید.
                 </p>
               )}
               {exceedsCapacity && (
                 <p className="text-center text-sm text-error-500">
-                  ظرفیت این اتاق برای {capacity} مهمانه — تعداد مهمانان یا اتاق
-                  رو تنظیم کنید.
+                  ظرفیت این اتاق برای {capacity} مهمان است — تعداد مهمانان یا اتاق
+                  را تنظیم کنید.
                 </p>
               )}
             </div>

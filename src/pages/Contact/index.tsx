@@ -100,11 +100,11 @@ export function Contact() {
               <Headphones className="h-5 w-5 text-white sm:h-7 sm:w-7" />
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-4xl">
-              ما اینجا هستیم که کمکت کنیم
+              ما اینجا هستیم که به شما کمک کنیم
             </h1>
             <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-white/80 sm:mt-4 sm:text-base">
-              سوالی داری؟ پیشنهادی داری؟ یا مشکلی پیش اومده؟ تیم پشتیبانی ما
-              آماده شنیدنه.
+              سوالی دارید؟ پیشنهادی دارید؟ یا مشکلی پیش آمده است؟ تیم پشتیبانی ما
+              آماده شنیدن پیام شماست.
             </p>
           </div>
         </FadeIn>
@@ -169,7 +169,7 @@ export function Contact() {
                         پیام بفرستید
                       </h2>
                       <p className="text-xs text-neutral-500 sm:text-sm">
-                        فرم زیر رو پر کنید تا در اسرع وقت پاسخ بدیم
+                        فرم زیر را پر کنید تا در اسرع وقت پاسخ شما را بدهیم
                       </p>
                     </div>
                   </div>
@@ -197,6 +197,7 @@ export function Contact() {
                         type="text"
                         placeholder="نام کامل"
                         aria-invalid={!!errors.name}
+                        aria-describedby={errors.name ? "contact-name-error" : undefined}
                         className={cn(
                           "h-11 w-full rounded-xl border bg-neutral-50/50 pr-11 pl-4 text-sm text-neutral-900 placeholder:text-neutral-400 sm:h-12",
                           "transition-all duration-200",
@@ -209,7 +210,7 @@ export function Contact() {
                       />
                     </div>
                     {errors.name && (
-                      <p className="text-xs text-error-500">
+                      <p id="contact-name-error" className="text-xs text-error-500">
                         {errors.name.message}
                       </p>
                     )}
@@ -233,6 +234,7 @@ export function Contact() {
                         dir="ltr"
                         placeholder="email@example.com"
                         aria-invalid={!!errors.email}
+                        aria-describedby={errors.email ? "contact-email-error" : undefined}
                         className={cn(
                           "h-11 w-full rounded-xl border bg-neutral-50/50 pr-11 pl-4 text-sm text-neutral-900 placeholder:text-neutral-400 sm:h-12",
                           "transition-all duration-200",
@@ -245,7 +247,7 @@ export function Contact() {
                       />
                     </div>
                     {errors.email && (
-                      <p className="text-xs text-error-500">
+                      <p id="contact-email-error" className="text-xs text-error-500">
                         {errors.email.message}
                       </p>
                     )}
@@ -264,6 +266,7 @@ export function Contact() {
                       rows={4}
                       placeholder="پیام خود را اینجا بنویسید..."
                       aria-invalid={!!errors.message}
+                      aria-describedby={errors.message ? "contact-message-error" : undefined}
                       className={cn(
                         "w-full resize-none rounded-xl border bg-neutral-50/50 px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400",
                         "transition-all duration-200",
@@ -275,7 +278,7 @@ export function Contact() {
                       {...register("message")}
                     />
                     {errors.message && (
-                      <p className="text-xs text-error-500">
+                      <p id="contact-message-error" className="text-xs text-error-500">
                         {errors.message.message}
                       </p>
                     )}

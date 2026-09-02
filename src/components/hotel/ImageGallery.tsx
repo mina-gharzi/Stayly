@@ -25,6 +25,7 @@ function FullscreenModal({
   onClose: () => void;
 }) {
   const [idx, setIdx] = useState(initial);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const go = useCallback(
     (d: number) => {
       setIdx((i) =>
@@ -41,26 +42,51 @@ function FullscreenModal({
   );
 
   useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
+
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowLeft") go(1);
       if (e.key === "ArrowRight") go(-1);
+      if (e.key === "Tab") {
+        const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        if (!focusables || focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     document.addEventListener("keydown", handler);
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", handler);
       document.body.style.overflow = "";
+      previouslyFocused?.focus();
     };
   }, [go, onClose]);
 
   return (
     <div
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/95 backdrop-blur"
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="نمایش تصویر"
+      tabIndex={-1}
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/95 backdrop-blur focus:outline-none"
       onClick={onClose}
     >
       <button
         onClick={onClose}
+        aria-label="بستن نمایش تصویر"
         className="absolute inset-s-4 top-4 h-10 w-10 rounded-full bg-white/10 text-white backdrop-blur hover:bg-white/20"
       >
         <X aria-hidden />
@@ -82,6 +108,7 @@ function FullscreenModal({
               e.stopPropagation();
               go(1);
             }}
+            aria-label="تصویر بعدی"
             className="absolute inset-s-4 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/10 text-white backdrop-blur hover:bg-white/25"
           >
             <ChevronRight aria-hidden />
@@ -91,6 +118,7 @@ function FullscreenModal({
               e.stopPropagation();
               go(-1);
             }}
+            aria-label="تصویر قبلی"
             className="absolute inset-e-4 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/10 text-white backdrop-blur hover:bg-white/25"
           >
             <ChevronLeft aria-hidden />
@@ -159,6 +187,7 @@ export function ImageGallery({ images }: { images: HotelImage[] }) {
           </span>
           <button
             onClick={() => setFullscreen(true)}
+            aria-label="نمایش تمام‌صفحه تصویر"
             className="absolute inset-s-3 top-3 h-8 w-8 rounded-full bg-neutral-900/40 text-white backdrop-blur-sm"
           >
             <Maximize2 className="h-4 w-4" />
@@ -167,13 +196,15 @@ export function ImageGallery({ images }: { images: HotelImage[] }) {
             <>
               <button
                 onClick={prev}
-                className="absolute inset-s-2 top-1/2 h-8 w-8 rounded-full bg-white/80 text-neutral-800 shadow-sm"
+                aria-label="تصویر قبلی"
+                className="absolute inset-s-2 top-1/2 h-8 w-8 rounded-full bg-white/80 text-neutral-800 shadow-soft"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
               <button
                 onClick={next}
-                className="absolute inset-e-2 top-1/2 h-8 w-8 rounded-full bg-white/80 text-neutral-800 shadow-sm"
+                aria-label="تصویر بعدی"
+                className="absolute inset-e-2 top-1/2 h-8 w-8 rounded-full bg-white/80 text-neutral-800 shadow-soft"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -186,6 +217,7 @@ export function ImageGallery({ images }: { images: HotelImage[] }) {
               <button
                 key={i}
                 onClick={() => select(i)}
+                aria-label={`انتخاب تصویر ${i + 1}`}
                 className={cn(
                   "rounded-full w-1.5 h-1.5",
                   i === active ? "bg-primary-600" : "bg-neutral-300",
@@ -205,6 +237,7 @@ export function ImageGallery({ images }: { images: HotelImage[] }) {
           <div className="pointer-events-none absolute inset-0 bg-black/30" />
           <button
             onClick={() => setFullscreen(true)}
+            aria-label="نمایش تمام‌صفحه تصویر"
             className="absolute inset-s-4 top-4 h-10 w-10 rounded-full bg-neutral-900/40 text-white backdrop-blur-sm"
           >
             <Maximize2 className="h-4 w-4" />
@@ -216,13 +249,15 @@ export function ImageGallery({ images }: { images: HotelImage[] }) {
             <>
               <button
                 onClick={prev}
-                className="absolute inset-s-4 top-1/2 h-11 w-11 rounded-full bg-white/80 shadow-lg"
+                aria-label="تصویر قبلی"
+                className="absolute inset-s-4 top-1/2 h-11 w-11 rounded-full bg-white/80 shadow-soft"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
               <button
                 onClick={next}
-                className="absolute inset-e-4 top-1/2 h-11 w-11 rounded-full bg-white/80 shadow-lg"
+                aria-label="تصویر بعدی"
+                className="absolute inset-e-4 top-1/2 h-11 w-11 rounded-full bg-white/80 shadow-soft"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -235,6 +270,8 @@ export function ImageGallery({ images }: { images: HotelImage[] }) {
               <button
                 key={img.id || i}
                 onClick={() => select(i)}
+                aria-label={`انتخاب تصویر ${i + 1}`}
+                aria-current={i === active ? "true" : undefined}
                 className={cn(
                   "relative rounded-xl",
                   i === active

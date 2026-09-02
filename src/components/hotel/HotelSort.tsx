@@ -29,6 +29,7 @@ export function HotelSort({ value, onChange }: HotelSortProps) {
       <select
         value={value}
         onChange={(e) => onChange({ sort: e.target.value })}
+        aria-label="مرتب‌سازی نتایج"
         className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-neutral-200 bg-white ps-9 pe-9 text-sm font-medium text-neutral-900 shadow-card transition-colors hover:border-primary-300 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 sm:w-auto"
       >
         {options.map((opt) => (

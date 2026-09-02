@@ -19,12 +19,19 @@ export function GuestSelector({ value, onChange }: GuestSelectorProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
+    function onClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node))
         setOpen(false);
     }
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, []);
 
   function update(key: keyof GuestValue, delta: number, min: number) {
@@ -38,12 +45,16 @@ export function GuestSelector({ value, onChange }: GuestSelectorProps) {
   ];
 
   const summary = `${value.adults} بزرگسال · ${value.children} کودک · ${value.rooms} اتاق`;
+  const panelId = "guest-selector-panel";
 
   return (
     <div ref={ref} className="relative">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
+        aria-haspopup="true"
+        aria-expanded={open}
+        aria-controls={panelId}
         className="flex h-12 w-full items-center gap-3 rounded-xl border border-neutral-200 bg-neutral-50/50 pr-4 pl-4 text-sm text-neutral-900 transition-all duration-200 hover:border-neutral-300 focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/10"
       >
         <Users className="h-icon-sm w-icon-sm shrink-0 text-neutral-400" aria-hidden />
@@ -57,7 +68,11 @@ export function GuestSelector({ value, onChange }: GuestSelectorProps) {
       </button>
 
       {open && (
-        <div className="absolute inset-x-0 top-full z-50 mt-2 w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white p-4 shadow-elevated">
+        <div
+          id={panelId}
+          role="listbox"
+          className="absolute inset-x-0 top-full z-50 mt-2 w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white p-4 shadow-elevated"
+        >
           {rows.map((row, i) => (
             <div
               key={row.key}
@@ -74,6 +89,7 @@ export function GuestSelector({ value, onChange }: GuestSelectorProps) {
                   type="button"
                   onClick={() => update(row.key, -1, row.min)}
                   disabled={value[row.key] <= row.min}
+                  aria-label={`کاهش ${row.label}`}
                   className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50 text-neutral-600 transition-all duration-200 hover:bg-neutral-100 hover:text-neutral-900",
                     value[row.key] <= row.min &&
@@ -82,7 +98,10 @@ export function GuestSelector({ value, onChange }: GuestSelectorProps) {
                 >
                   <Minus className="h-3.5 w-3.5" aria-hidden />
                 </button>
-                <span className="w-6 text-center text-sm font-semibold tabular-nums text-neutral-900">
+                <span
+                  aria-live="polite"
+                  className="w-6 text-center text-sm font-semibold tabular-nums text-neutral-900"
+                >
                   {value[row.key]}
                 </span>
                 <button

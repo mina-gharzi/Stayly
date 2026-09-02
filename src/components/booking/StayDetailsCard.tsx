@@ -33,7 +33,7 @@ export function StayDetailsCard({
         </div>
         <div>
           <h2 className="text-sm font-bold text-neutral-900 sm:text-base">جزئیات اقامت</h2>
-          <p className="text-xs text-neutral-500">تاریخ سفر و تعداد مهمانان رو مشخص کن</p>
+          <p className="text-xs text-neutral-500">تاریخ سفر و تعداد مهمانان را مشخص کنید</p>
         </div>
       </div>
 

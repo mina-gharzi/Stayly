@@ -1,6 +1,6 @@
 // src/pages/HotelDetails/index.tsx
 import { useParams, useNavigate } from "react-router-dom";
-import { Star, MapPin, Clock, AlertTriangle } from "lucide-react";
+import { Star, MapPin, Clock, SearchX, BedDouble } from "lucide-react";
 import { useHotelDetails } from "@/hooks/useHotelDetails";
 import { cities } from "@/data/cities";
 import { ImageGallery } from "@/components/hotel/ImageGallery";
@@ -10,6 +10,8 @@ import { RoomCard } from "@/components/room/RoomCard";
 import { ReviewsSection } from "@/components/review/ReviewsSection";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { FadeIn } from "@/components/common/FadeIn";
 import { formatToman } from "@/utils/currency";
 import type { RoomType } from "@/types";
@@ -49,19 +51,11 @@ export function HotelDetails() {
   /* ─── Error ─── */
   if (isError) {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-5 px-4 py-32 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100 text-neutral-500">
-          <AlertTriangle className="h-8 w-8" aria-hidden />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-neutral-900">مشکلی پیش آمد</h2>
-          <p className="mt-2 text-neutral-600 leading-relaxed">
-            متأسفانه در دریافت اطلاعات این هتل مشکلی به وجود آمده است.
-          </p>
-        </div>
-        <Button size="lg" className="mt-2" onClick={() => refetch()}>
-          تلاش مجدد
-        </Button>
+      <div className="mx-auto max-w-md px-4 py-20">
+        <ErrorState
+          description="متأسفانه در دریافت اطلاعات این هتل مشکلی به وجود آمده است."
+          onRetry={() => refetch()}
+        />
       </div>
     );
   }
@@ -69,12 +63,17 @@ export function HotelDetails() {
   /* ─── Not Found ─── */
   if (!hotel) {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-5 px-4 py-32 text-center">
-        <p className="text-xl font-bold text-neutral-900">هتل یافت نشد</p>
-        <p className="text-neutral-600">هتل مورد نظر شما وجود ندارد.</p>
-        <Button size="lg" onClick={() => navigate("/hotels")}>
-          بازگشت به جستجو
-        </Button>
+      <div className="mx-auto max-w-md px-4 py-20">
+        <EmptyState
+          icon={SearchX}
+          title="هتل یافت نشد"
+          description="هتل مورد نظر شما وجود ندارد."
+          action={
+            <Button size="lg" onClick={() => navigate("/hotels")}>
+              بازگشت به جستجو
+            </Button>
+          }
+        />
       </div>
     );
   }
@@ -204,15 +203,25 @@ export function HotelDetails() {
               <h2 className="text-xl font-bold text-neutral-900">
                 اتاق‌های موجود
               </h2>
-              <div className="mt-6 flex flex-col gap-4">
-                {rooms.map((room) => (
-                  <RoomCard
-                    key={room.id}
-                    room={room}
-                    onSelect={handleSelectRoom}
+              {rooms.length > 0 ? (
+                <div className="mt-6 flex flex-col gap-4">
+                  {rooms.map((room) => (
+                    <RoomCard
+                      key={room.id}
+                      room={room}
+                      onSelect={handleSelectRoom}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-6">
+                  <EmptyState
+                    icon={BedDouble}
+                    title="اتاقی برای این هتل ثبت نشده است"
+                    description="لطفاً بعداً دوباره مراجعه کنید."
                   />
-                ))}
-              </div>
+                </div>
+              )}
             </section>
           </FadeIn>
 

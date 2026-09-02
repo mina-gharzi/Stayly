@@ -1,5 +1,5 @@
 // src/pages/Profile/index.tsx
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +26,7 @@ export function Profile() {
   const showToast = useToastStore((s) => s.show);
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -55,6 +56,31 @@ export function Profile() {
     navigate("/");
   }
 
+  function handleAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showToast("فقط فایل تصویر قابل بارگذاری است", "error");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      showToast("حجم تصویر باید کمتر از ۲ مگابایت باشد", "error");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateUser({ avatar: reader.result as string });
+      showToast("عکس پروفایل با موفقیت به‌روزرسانی شد", "success");
+    };
+    reader.onerror = () => {
+      showToast("بارگذاری تصویر ناموفق بود", "error");
+    };
+    reader.readAsDataURL(file);
+  }
+
   if (!user) return null;
 
   return (
@@ -76,11 +102,24 @@ export function Profile() {
               />
               <button
                 type="button"
-                className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 rounded-2xl bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 aria-label="تغییر عکس پروفایل"
               >
                 <Camera className="h-6 w-6 text-white" />
+                <span className="text-[10px] font-medium text-white">
+                  تغییر عکس
+                </span>
               </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="hidden"
+                aria-hidden="true"
+                tabIndex={-1}
+              />
             </div>
 
             <div className="flex-1 text-center sm:text-right">
@@ -127,7 +166,7 @@ export function Profile() {
       <FadeIn delay={100}>
         <div className="mt-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-neutral-900">اطلاعات شخصی</h2>
+            <h2 className="text-xl font-bold text-neutral-900">اطلاعات شخصی</h2>
             {!isEditing ? (
               <Button
                 variant="outline"
@@ -181,6 +220,7 @@ export function Profile() {
                     type="text"
                     disabled={!isEditing}
                     aria-invalid={!!errors.firstName}
+                    aria-describedby={errors.firstName ? "firstName-error" : undefined}
                     className={cn(
                       "h-12 w-full rounded-xl border bg-neutral-50/50 pr-11 pl-4 text-sm text-neutral-900 placeholder:text-neutral-400",
                       "transition-all duration-200",
@@ -195,7 +235,7 @@ export function Profile() {
                   />
                 </div>
                 {errors.firstName && (
-                  <p className="text-xs text-error-500">
+                  <p id="firstName-error" className="text-xs text-error-500">
                     {errors.firstName.message}
                   </p>
                 )}
@@ -217,6 +257,7 @@ export function Profile() {
                     type="text"
                     disabled={!isEditing}
                     aria-invalid={!!errors.lastName}
+                    aria-describedby={errors.lastName ? "lastName-error" : undefined}
                     className={cn(
                       "h-12 w-full rounded-xl border bg-neutral-50/50 pr-11 pl-4 text-sm text-neutral-900 placeholder:text-neutral-400",
                       "transition-all duration-200",
@@ -231,7 +272,7 @@ export function Profile() {
                   />
                 </div>
                 {errors.lastName && (
-                  <p className="text-xs text-error-500">
+                  <p id="lastName-error" className="text-xs text-error-500">
                     {errors.lastName.message}
                   </p>
                 )}
@@ -255,6 +296,7 @@ export function Profile() {
                   dir="ltr"
                   disabled={!isEditing}
                   aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "profile-email-error" : undefined}
                   className={cn(
                     "h-12 w-full rounded-xl border bg-neutral-50/50 pr-11 pl-4 text-sm text-neutral-900 placeholder:text-neutral-400",
                     "transition-all duration-200",
@@ -269,7 +311,7 @@ export function Profile() {
                 />
               </div>
               {errors.email && (
-                <p className="text-xs text-error-500">{errors.email.message}</p>
+                <p id="profile-email-error" className="text-xs text-error-500">{errors.email.message}</p>
               )}
             </div>
 
@@ -290,6 +332,7 @@ export function Profile() {
                   dir="ltr"
                   disabled={!isEditing}
                   aria-invalid={!!errors.phone}
+                  aria-describedby={errors.phone ? "profile-phone-error" : undefined}
                   className={cn(
                     "h-12 w-full rounded-xl border bg-neutral-50/50 pr-11 pl-4 text-sm text-neutral-900 placeholder:text-neutral-400",
                     "transition-all duration-200",
@@ -304,7 +347,7 @@ export function Profile() {
                 />
               </div>
               {errors.phone && (
-                <p className="text-xs text-error-500">{errors.phone.message}</p>
+                <p id="profile-phone-error" className="text-xs text-error-500">{errors.phone.message}</p>
               )}
             </div>
 
@@ -325,6 +368,7 @@ export function Profile() {
                   disabled={!isEditing}
                   placeholder="ایران"
                   aria-invalid={!!errors.country}
+                  aria-describedby={errors.country ? "country-error" : undefined}
                   className={cn(
                     "h-12 w-full rounded-xl border bg-neutral-50/50 pr-11 pl-4 text-sm text-neutral-900 placeholder:text-neutral-400",
                     "transition-all duration-200",
@@ -339,7 +383,7 @@ export function Profile() {
                 />
               </div>
               {errors.country && (
-                <p className="text-xs text-error-500">
+                <p id="country-error" className="text-xs text-error-500">
                   {errors.country.message}
                 </p>
               )}

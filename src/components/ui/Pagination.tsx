@@ -14,7 +14,10 @@ export function Pagination({ page, totalPages, onChange }: PaginationProps) {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
 
   return (
-    <nav className="flex items-center justify-center gap-2" aria-label="صفحه‌بندی">
+    <nav
+      className="flex max-w-full flex-wrap items-center justify-center gap-2"
+      aria-label="صفحه‌بندی"
+    >
       <button
         onClick={() => onChange(page - 1)}
         disabled={page === 1}

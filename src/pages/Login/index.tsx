@@ -54,7 +54,7 @@ export function Login() {
           {/* هدر */}
           <div className="mb-8 text-center">
             <p className="mt-2 text-sm text-neutral-400">
-              برای ادامه سفرت وارد حساب کاربریت شو
+              برای ادامه سفر خود وارد حساب کاربری‌تان شوید
             </p>
           </div>
 

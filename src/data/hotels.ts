@@ -2,11 +2,23 @@
 import type { Hotel } from '@/types'
 import { cityImagePools, pickImages } from './images'
 
+/**
+ * تبدیل شناسهٔ هتل (slug) به یک برچسب خوانا برای متن جایگزین تصویر.
+ * مثال: 'baku-fairmont' → 'Baku Fairmont photo 1'
+ */
+function slugToLabel(slug: string) {
+  return slug
+    .split('-')
+    .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+    .join(' ')
+}
+
 function hotelImages(hotelId: string, cityId: string, offset: number, count: number) {
+  const label = slugToLabel(hotelId)
   return pickImages(cityImagePools[cityId], offset, count).map((url, i) => ({
     id: `${hotelId}-img-${i + 1}`,
     url,
-    alt: `${hotelId} photo ${i + 1}`,
+    alt: `${label} photo ${i + 1}`,
   }))
 }
 

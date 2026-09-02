@@ -36,10 +36,11 @@ export function Modal({
         if (!focusables || focusables.length === 0) return;
         const first = focusables[0];
         const last = focusables[focusables.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
+        // اگر فوکوس از داخل دیالوگ خارج شده (مثلاً کلیک روی پسزمینه)، به اول برگردان
+        if (e.shiftKey && (document.activeElement === first || !dialogRef.current?.contains(document.activeElement))) {
           e.preventDefault();
           last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
+        } else if (!e.shiftKey && (document.activeElement === last || !dialogRef.current?.contains(document.activeElement))) {
           e.preventDefault();
           first.focus();
         }
@@ -66,7 +67,7 @@ export function Modal({
         aria-labelledby="modal-title"
         tabIndex={-1}
         className={cn(
-          "w-full max-w-md rounded-lg bg-white p-6 shadow-elevated focus:outline-none",
+          "w-full max-w-md rounded-2xl bg-white p-6 shadow-elevated focus:outline-none",
           className,
         )}
       >
@@ -77,8 +78,6 @@ export function Modal({
           >
             {title}
           </h2>
-          // src/components/ui/Modal.tsx — فقط aria-label تغییر کرده، بقیه
-          دست‌نخورده
           <button
             onClick={onClose}
             aria-label="بستن پنجره"

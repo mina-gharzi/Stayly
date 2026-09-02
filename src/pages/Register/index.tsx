@@ -53,7 +53,7 @@ export function Register() {
           {/* هدر */}
           <div className="mb-8 text-center">
             <p className="mt-2 text-sm text-neutral-400">
-              اطلاعاتت رو وارد کن تا شروع کنیم
+              اطلاعات خود را وارد کنید تا فرآیند ثبت‌نام آغاز شود
             </p>
           </div>
 

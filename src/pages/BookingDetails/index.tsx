@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { FadeIn } from "@/components/common/FadeIn";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { formatToman } from "@/utils/currency";
 import { useToastStore } from "@/store/toastStore";
 import { useAuthStore } from "@/store/authStore";
@@ -73,7 +74,7 @@ export function BookingDetails() {
 
   // قانون ۸: فقط رزرو متعلق به کاربر لاگین‌شده باید برگردونده بشه — این صفحه زیر
   // ProtectedRoute هست، پس user باید موجود باشه، ولی برای اطمینان چک می‌کنیم
-  const { data: booking, isLoading } = useQuery({
+  const { data: booking, isLoading, isError, refetch } = useQuery({
     queryKey: ["booking", bookingId, user?.id],
     queryFn: () => getBookingById(bookingId!, user!.id),
     enabled: !!bookingId && !!user,
@@ -110,6 +111,17 @@ export function BookingDetails() {
           <Skeleton className="h-40 w-full rounded-2xl" />
           <Skeleton className="h-40 w-full rounded-2xl" />
         </div>
+      </div>
+    );
+  }
+
+  if (isError && !booking) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">
+        <ErrorState
+          description="مشکلی در دریافت اطلاعات این رزرو پیش آمد."
+          onRetry={() => refetch()}
+        />
       </div>
     );
   }
@@ -414,7 +426,7 @@ export function BookingDetails() {
             onClick={handleConfirmCancel}
             isLoading={isCancelling}
           >
-            بله، لغو کن
+            بله، لغو کنید
           </Button>
         </div>
       </Modal>

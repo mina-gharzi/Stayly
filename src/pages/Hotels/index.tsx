@@ -1,12 +1,13 @@
 // src/pages/Hotels/index.tsx
-import { SearchX, AlertTriangle } from "lucide-react";
+import { SearchX } from "lucide-react";
 import { useHotelSearch } from "@/hooks/useHotelSearch";
 import { HotelFilters } from "@/components/hotel/HotelFilters";
 import { HotelSort } from "@/components/hotel/HotelSort";
 import { HotelCard } from "@/components/hotel/HotelCard";
 import { HotelCardSkeleton } from "@/components/hotel/HotelCardSkeleton";
 import { Pagination } from "@/components/ui/Pagination";
-import { Button } from "@/components/ui/Button";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { FadeIn } from "@/components/common/FadeIn";
 import { cities } from "@/data/cities";
 
@@ -36,7 +37,7 @@ export function Hotels() {
                     ? "در حال جستجو..."
                     : `${data?.total ?? 0} اقامتگاه پیدا شد`}
                 </p>
-                <h1 className="mt-1 text-xl font-bold text-primary-600 sm:text-2xl">
+                <h1 className="mt-1 text-2xl font-bold text-primary-600">
                   هتلها در{" "}
                   <span className="text-primary-600">{destinationLabel}</span>
                 </h1>
@@ -56,41 +57,18 @@ export function Hotels() {
             )}
 
             {isError && (
-              <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-neutral-200 bg-white px-6 py-20 text-center shadow-card">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-error-100">
-                  <AlertTriangle
-                    className="h-6 w-6 text-error-500"
-                    aria-hidden
-                  />
-                </span>
-                <div>
-                  <p className="font-semibold text-neutral-900">
-                    مشکلی پیش آمد
-                  </p>
-                  <p className="mt-1 text-sm text-neutral-600">
-                    بارگذاری هتلها با خطا مواجه شد.
-                  </p>
-                </div>
-                <Button variant="outline" onClick={() => refetch()}>
-                  تلاش مجدد
-                </Button>
-              </div>
+              <ErrorState
+                description="بارگذاری هتلها با خطا مواجه شد."
+                onRetry={() => refetch()}
+              />
             )}
 
             {!isLoading && !isError && data?.data.length === 0 && (
-              <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-neutral-200 bg-white px-6 py-20 text-center shadow-card">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100">
-                  <SearchX className="h-6 w-6 text-neutral-400" aria-hidden />
-                </span>
-                <div>
-                  <p className="font-semibold text-neutral-900">
-                    هتلی یافت نشد
-                  </p>
-                  <p className="mt-1 text-sm text-neutral-600">
-                    جستجو یا فیلترهای خود را تغییر دهید.
-                  </p>
-                </div>
-              </div>
+              <EmptyState
+                icon={SearchX}
+                title="هتلی یافت نشد"
+                description="جستجو یا فیلترهای خود را تغییر دهید."
+              />
             )}
 
             {!isLoading && !isError && data && data.data.length > 0 && (

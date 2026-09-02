@@ -5,7 +5,7 @@
 // قانون ۱۰/۱۱: هتل و اتاق هم از services میان، نه از data مستقیم.
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { CheckCircle2, AlertCircle } from 'lucide-react'
+import { CheckCircle2, CalendarX } from 'lucide-react'
 import { getBookingById } from '@/services/bookings'
 import { getHotelById } from '@/services/hotels'
 import { getRoomById } from '@/services/rooms'
@@ -13,7 +13,8 @@ import { useAuthStore } from '@/store/authStore'
 import { formatToman } from '@/utils/currency'
 import { FadeIn } from '@/components/common/FadeIn'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { Button } from '@/components/ui/Button'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 export function Confirmation() {
   const { bookingId } = useParams<{ bookingId: string }>()
@@ -51,21 +52,30 @@ export function Confirmation() {
 
   if (bookingQuery.isError) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <AlertCircle className="mx-auto h-10 w-10 text-error-500" aria-hidden />
-        <p className="mt-3 font-medium text-neutral-900">مشکلی در دریافت رزرو پیش آمد</p>
-        <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>تلاش دوباره</Button>
+      <div className="mx-auto max-w-2xl px-4 py-16">
+        <ErrorState
+          description="مشکلی در دریافت اطلاعات رزرو پیش آمد."
+          onRetry={() => bookingQuery.refetch()}
+        />
       </div>
     )
   }
 
   if (!booking) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <p className="font-medium text-neutral-900">رزروی با این شناسه یافت نشد</p>
-        <Link to="/" className="mt-4 inline-flex h-11 items-center justify-center rounded-md border border-neutral-200 px-4 text-sm font-medium text-neutral-800 hover:bg-neutral-50">
-          بازگشت به صفحه اصلی
-        </Link>
+      <div className="mx-auto max-w-2xl px-4 py-16">
+        <EmptyState
+          icon={CalendarX}
+          title="رزروی با این شناسه یافت نشد"
+          action={
+            <Link
+              to="/"
+              className="inline-flex h-11 items-center justify-center rounded-xl bg-primary-700 px-5 text-sm font-medium text-white transition-colors hover:bg-primary-900"
+            >
+              بازگشت به صفحه اصلی
+            </Link>
+          }
+        />
       </div>
     )
   }

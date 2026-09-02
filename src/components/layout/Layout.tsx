@@ -13,8 +13,15 @@ export function Layout() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* لینک پرش برای صفحه‌خوان‌ها / کاربران کیبورد */}
+      <a
+        href="#main-content"
+        className="sr-only z-50 rounded-md bg-primary-700 px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus:fixed focus:top-3 focus:right-3"
+      >
+        پرش به محتوای اصلی
+      </a>
       <Navbar />
-      <main className="flex-1">
+      <main id="main-content" className="flex-1" tabIndex={-1}>
         <Outlet />
       </main>
       {!hideFooter && <Footer />}

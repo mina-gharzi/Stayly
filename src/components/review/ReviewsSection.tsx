@@ -1,8 +1,9 @@
 // src/components/review/ReviewsSection.tsx
-import { Star } from 'lucide-react'
+import { Star, MessageSquare } from 'lucide-react'
 import type { Review } from '@/types'
 import { RatingDistribution } from './RatingDistribution'
 import { ReviewCard } from './ReviewCard'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 export function ReviewsSection({ reviews, guestRating }: { reviews: Review[]; guestRating: number }) {
   return (
@@ -24,7 +25,12 @@ export function ReviewsSection({ reviews, guestRating }: { reviews: Review[]; gu
 
       <div className="mt-6">
         {reviews.length === 0 ? (
-          <p className="text-sm text-neutral-600">هنوز نظری ثبت نشده است.</p>
+          <EmptyState
+            icon={MessageSquare}
+            title="هنوز نظری ثبت نشده است"
+            description="اولین نفری باشید که تجربهٔ خود را با مهمانان بعدی به اشتراک می‌گذارد."
+            className="py-10"
+          />
         ) : (
           reviews.map((review) => <ReviewCard key={review.id} review={review} />)
         )}

@@ -53,7 +53,7 @@ export function About() {
                 Stayly
               </h1>
               <p className="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-white/80">
-                پلتفرم رزرو هتل که سفر رو آسان، شفاف و لذت‌بخش می‌کنه.
+                پلتفرم رزرو هتل که سفر را آسان، شفاف و لذت‌بخش می‌کند.
               </p>
             </div>
           </FadeIn>
@@ -62,7 +62,7 @@ export function About() {
         {/* آمار شناور */}
         <FadeIn delay={200}>
           <div className="relative z-10 mx-auto -mt-12 max-w-3xl px-4">
-            <div className="grid grid-cols-3 gap-3 rounded-lg bg-white p-6 shadow-elevated sm:p-8">
+            <div className="grid grid-cols-3 gap-3 rounded-2xl bg-white p-6 shadow-elevated sm:p-8">
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center">
                   <p className="font-mono text-2xl font-bold tabular-nums text-neutral-900 sm:text-3xl">
@@ -84,8 +84,8 @@ export function About() {
           <h2 className="text-xl font-bold text-neutral-900">ماموریت ما</h2>
           <p className="mt-4 text-lg leading-loose text-neutral-600">
             ما بر این باوریم که هر سفری نیازمند آرامش است. Stayly با ارائه اطلاعات
-            دقیق، قیمت شفاف و پشتیبانی واقعی، تجربه رزرو هتل رو برای شما
-            لذت‌بخش‌تر می‌کنه.
+            دقیق، قیمت شفاف و پشتیبانی واقعی، تجربه رزرو هتل را برای شما
+            لذت‌بخش‌تر می‌کند.
           </p>
         </section>
       </FadeIn>
@@ -98,8 +98,8 @@ export function About() {
         <div className="mt-6 flex flex-col gap-4">
           {values.map((item, index) => (
             <FadeIn key={item.title} delay={index * 120} direction="left">
-              <div className="flex items-start gap-4 rounded-lg border border-neutral-200 bg-white p-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary-50">
+              <div className="flex items-start gap-4 rounded-2xl border border-neutral-200 bg-white p-5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50">
                   <item.icon className="h-5 w-5 text-primary-600" />
                 </div>
                 <div>
@@ -117,15 +117,15 @@ export function About() {
       {/* ═══ CTA ═══ */}
       <FadeIn>
         <section className="mx-auto max-w-3xl px-4 pt-16">
-          <div className="rounded-lg bg-primary-700 p-10 text-center sm:p-14">
+          <div className="rounded-2xl bg-primary-700 p-10 text-center sm:p-14">
             <h2 className="text-xl font-bold text-white">آماده سفر هستید؟</h2>
             <p className="mx-auto mt-3 max-w-md text-sm text-white">
-              بهترین اقامتگاه‌ها رو از بین صدها گزینه پیدا کنید و با خیال راحت
+              بهترین اقامتگاه‌ها را از بین صدها گزینه پیدا کنید و با خیال راحت
               رزرو کنید.
             </p>
             <Link
               to="/hotels"
-              className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary-50 px-6 py-3 text-sm font-medium text-primary-900 shadow-card transition hover:shadow-elevated"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary-50 px-6 py-3 text-sm font-medium text-primary-900 shadow-card transition hover:shadow-elevated"
             >
               <span>مشاهده اقامتگاه‌ها</span>
               <ArrowLeft className="h-4 w-4" />

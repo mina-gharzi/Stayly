@@ -28,6 +28,7 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false); // منوی کاربر
   const [mobileOpen, setMobileOpen] = useState(false); // دراور موبایل
   const menuRef = useRef<HTMLDivElement>(null);
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -35,9 +36,27 @@ export function Navbar() {
         setMenuOpen(false);
       }
     }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
     document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    // هنگام باز شدن، فوکوس را داخل دراور ببریم و Escape آن را ببندد
+    function onDrawerKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMobileOpen(false);
+    }
+    drawerCloseRef.current?.focus();
+    document.addEventListener("keydown", onDrawerKeyDown);
+    return () => document.removeEventListener("keydown", onDrawerKeyDown);
+  }, [mobileOpen]);
 
   function handleLogout() {
     logout();
@@ -98,6 +117,9 @@ export function Navbar() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
+                  aria-haspopup="true"
+                  aria-expanded={menuOpen}
+                  aria-controls="user-menu"
                   className="flex items-center gap-2 rounded-full border border-neutral-200 py-1 pe-2 ps-1 transition-colors hover:border-primary-300"
                 >
                   <img
@@ -113,7 +135,10 @@ export function Navbar() {
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute inset-e-0 top-full z-10 mt-2 w-52 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-elevated">
+                  <div
+                    id="user-menu"
+                    className="absolute inset-e-0 top-full z-10 mt-2 w-52 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-elevated"
+                  >
                     <div className="border-b border-neutral-100 px-4 py-3">
                       <p className="text-sm font-semibold text-neutral-900">
                         {user.firstName} {user.lastName}
@@ -179,6 +204,11 @@ export function Navbar() {
 
       {/* دراور موبایل — از راست به چپ */}
       <aside
+        id="mobile-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="منوی موبایل"
+        inert={!mobileOpen}
         className={`fixed inset-y-0 inset-s-0 z-50 flex w-72 max-w-[85%] flex-col bg-white shadow-elevated transition-transform duration-300 ease-in-out md:hidden ${
           mobileOpen ? "translate-x-0" : "translate-x-full"
         }`}
@@ -198,6 +228,7 @@ export function Navbar() {
             </span>
           </Link>
           <button
+            ref={drawerCloseRef}
             onClick={() => setMobileOpen(false)}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-700 transition-colors hover:border-primary-300"
             aria-label="بستن منو"

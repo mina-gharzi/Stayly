@@ -35,11 +35,13 @@ interface HotelFiltersProps {
 
 /* گروه فیلتر — تاشو */
 function FilterGroup({
+  id,
   title,
   icon: Icon,
   defaultOpen = false,
   children,
 }: {
+  id: string;
   title: string;
   icon: LucideIcon;
   defaultOpen?: boolean;
@@ -50,7 +52,10 @@ function FilterGroup({
     <div className="py-4 first:pt-0 last:pb-0">
       <button
         type="button"
+        id={`${id}-toggle`}
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={`${id}-panel`}
         className="flex w-full items-center justify-between text-start"
       >
         <span className="flex items-center gap-2 text-sm font-semibold text-primary-600">
@@ -66,6 +71,11 @@ function FilterGroup({
         />
       </button>
       <div
+        id={`${id}-panel`}
+        role="region"
+        aria-labelledby={`${id}-toggle`}
+        // وقتی بسته است، محتوا از ترتیب تب و درخت دسترس‌پذیری حذف می‌شود
+        inert={!open}
         className={`grid transition-all duration-300 ease-in-out ${
           open
             ? "mt-3 grid-rows-[1fr] opacity-100"
@@ -106,6 +116,8 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
         <button
           type="button"
           onClick={() => setMobileOpen((o) => !o)}
+          aria-expanded={mobileOpen}
+          aria-controls="hotel-filters-panel"
           className="flex w-full items-center justify-between rounded-2xl border border-neutral-200 bg-white px-4 py-3.5 shadow-card transition-colors hover:border-primary-300"
         >
           <span className="flex items-center gap-2 text-sm font-semibold text-primary-600">
@@ -121,6 +133,7 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
 
       {/* کارت فیلترها — موبایل: تاشو / دسکتاپ: همیشه باز */}
       <div
+        id="hotel-filters-panel"
         className={`mt-3 rounded-2xl border border-neutral-200 bg-white p-5 shadow-card lg:sticky lg:top-6 lg:mt-0 lg:block ${
           mobileOpen ? "block" : "hidden"
         }`}
@@ -132,7 +145,7 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
 
         <div className="divide-y divide-neutral-100">
           {/* محدوده قیمت */}
-          <FilterGroup title="محدوده قیمت" icon={Wallet} defaultOpen>
+          <FilterGroup id="price" title="محدوده قیمت" icon={Wallet} defaultOpen>
             <input
               type="range"
               min={0}
@@ -151,7 +164,7 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
           </FilterGroup>
 
           {/* رتبه ستاره */}
-          <FilterGroup title="رتبه ستاره" icon={Star}>
+          <FilterGroup id="star" title="رتبه ستاره" icon={Star}>
             <div className="flex flex-col gap-1">
               {[5, 4, 3, 2, 1].map((star) => (
                 <label
@@ -185,7 +198,7 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
           </FilterGroup>
 
           {/* امتیاز مهمانان */}
-          <FilterGroup title="امتیاز مهمانان" icon={Users}>
+          <FilterGroup id="guest-rating" title="امتیاز مهمانان" icon={Users}>
             <div className="flex flex-wrap gap-2">
               {[
                 { label: "همه", value: null },
@@ -212,7 +225,7 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
           </FilterGroup>
 
           {/* نوع اقامتگاه */}
-          <FilterGroup title="نوع اقامتگاه" icon={Building2}>
+          <FilterGroup id="property-type" title="نوع اقامتگاه" icon={Building2}>
             <div className="flex flex-col gap-1">
               {(Object.keys(propertyTypeLabels) as PropertyType[]).map(
                 (type) => (
@@ -240,7 +253,7 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
           </FilterGroup>
 
           {/* مقصد */}
-          <FilterGroup title="مقصد" icon={MapPin}>
+          <FilterGroup id="destination" title="مقصد" icon={MapPin}>
             <div className="flex flex-col gap-1">
               {cities.map((city) => (
                 <label
@@ -266,7 +279,7 @@ export function HotelFilters({ filters, onChange }: HotelFiltersProps) {
           </FilterGroup>
 
           {/* امکانات */}
-          <FilterGroup title="امکانات" icon={Sparkles}>
+          <FilterGroup id="amenities" title="امکانات" icon={Sparkles}>
             <div className="flex flex-col gap-1">
               {amenities.map((amenity) => (
                 <label

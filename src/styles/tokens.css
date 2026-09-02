@@ -20,7 +20,7 @@
   --color-neutral-50: #faf9f9;
   --color-neutral-100: #f3f0f0;
   --color-neutral-200: #e5e0e0;
-  --color-neutral-400: #b8aeae;
+  --color-neutral-400: #7a7070;
   --color-neutral-600: #756c6c;
   --color-neutral-800: #4a4242;
   --color-neutral-900: #2d2828;
@@ -55,6 +55,30 @@
   --font-size-2xs: 10px;
   --font-size-xs: 11px;
 
+  /* ─── مقیاس تایپوگرافی (Typography Scale) ─── */
+  /* مقیاس معنایی یکپارچه برای Heading / Body / Caption.
+     از این توکن‌ها در سراسر پروژه برای یکدست‌سازی تایپوگرافی استفاده می‌شود. */
+
+  /* Caption: برچسب‌ها، راهنماها، توضیحات کوتاه */
+  --text-caption: 0.75rem; /* 12px */
+  --text-caption-sm: 0.6875rem; /* 11px */
+  /* Body: متن اصلی و ثانویه */
+  --text-body-sm: 0.875rem; /* 14px — متن اصلی غالب */
+  --text-body: 1rem; /* 16px — دکمه‌های بزرگ و متن مهم */
+  /* Heading: عنوان‌های سطح‌بندی‌شده */
+  --text-heading-sm: 1.125rem; /* 18px — عنوان کارت/بخش کوچک */
+  --text-heading-md: 1.25rem; /* 20px — عنوان بخش (Section) */
+  --text-heading: 1.5rem; /* 24px — عنوان صفحه (Page H1) */
+  --text-heading-lg: 1.875rem; /* 30px — عنوان بزرگ (Hero/CTA) */
+  --text-heading-xl: 2.25rem; /* 36px — هیرو دسکتاپ */
+
+  /* ─── وزن فونت (Font Weight) ─── */
+  --font-weight-caption: 500;
+  --font-weight-body: 400;
+  --font-weight-body-medium: 500;
+  --font-weight-heading: 700;
+  --font-weight-heading-bold: 800;
+
   /* ─── شعاع گوشه‌ها (Border Radius) ─── */
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -63,10 +87,15 @@
   --radius-2xl: 24px;
 
   /* ─── سایه‌ها (Shadows) ─── */
+  /* سایه اصلی کارت‌ها و سطوح */
   --shadow-card:
     0 1px 3px rgba(33, 33, 33, 0.06), 0 1px 2px rgba(33, 33, 33, 0.04);
+  /* سایه برای المان‌های شناور/بالابری (Dropdown، Modal، Hover) */
   --shadow-elevated: 0 8px 24px rgba(33, 33, 33, 0.1);
+  /* سایه عمیق برای المان‌های کاملاً شناور */
   --shadow-float: 0 20px 40px rgba(33, 33, 33, 0.12);
+  /* سایه ملایم برای المان‌های کوچک (Control های گرد و …) */
+  --shadow-soft: 0 1px 2px rgba(33, 33, 33, 0.08);
 
   /* ─── فاصله‌ها (Spacing) ─── */
   --spacing-icon-sm: 18px;
@@ -94,6 +123,12 @@
 @layer base {
   body {
     @apply bg-neutral-50 text-neutral-900;
+  }
+
+  /* حلقه تمرکز یکپارچه و قابل‌مشاهده برای تمام عناصر انتخابی */
+  :focus-visible {
+    outline: 2px solid var(--color-primary-700);
+    outline-offset: 2px;
   }
 
   /* قیمت‌ها و اعداد فارسی */
@@ -221,5 +256,15 @@
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+
+  /* تمام انیمیشن‌ها و ترنزیشن‌های دیگر را غیرفعال کن */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

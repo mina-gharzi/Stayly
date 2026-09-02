@@ -27,5 +27,7 @@ export function useFavorites() {
     isFavorite: (hotelId: string) => favoriteIds.includes(hotelId),
     toggle,
     isLoading: query.isLoading,
+    isError: query.isError,
+    refetch: () => query.refetch(),
   }
 }

@@ -55,6 +55,11 @@ export function useCheckout(hotelId: string | undefined, roomTypeId: string) {
   const isError = hotelQuery.isError || roomQuery.isError
   const notFound = !isLoading && !isError && (!hotel || !room)
 
+  const refetch = () => {
+    hotelQuery.refetch()
+    roomQuery.refetch()
+  }
+
   const draftIncomplete = !draft.hotelId || !draft.roomTypeId || !draft.guestInfo
 
   async function submit(card: CardDetails) {
@@ -126,6 +131,7 @@ export function useCheckout(hotelId: string | undefined, roomTypeId: string) {
     isError,
     notFound,
     draftIncomplete,
+    refetch,
     nights,
     subtotal,
     taxAmount,

@@ -3,6 +3,7 @@ import type { Booking, BookingStatus } from '@/types'
 import { bookings as demoBookings } from '../data/bookings'
 import { getRoomByIdSync, reserveRoomAvailability, releaseRoomAvailability } from './rooms'
 import { createCancellation } from './cancellations'
+import { isValidDateRange, exceedsGuestCapacity, exceedsRoomAvailability, getGuestCapacity } from '@/utils/bookingRules'
 
 const CREATED_KEY = 'stayly-created-bookings'
 const OVERRIDES_KEY = 'stayly-booking-status-overrides'
@@ -56,12 +57,7 @@ function validateBookingRequest(booking: Omit<Booking, 'id' | 'createdAt'>): voi
   if (!booking.checkIn || !booking.checkOut) {
     throw new BookingValidationError('تاریخ ورود و خروج الزامی است.')
   }
-  const checkInDate = new Date(booking.checkIn)
-  const checkOutDate = new Date(booking.checkOut)
-  if (Number.isNaN(checkInDate.getTime()) || Number.isNaN(checkOutDate.getTime())) {
-    throw new BookingValidationError('تاریخ ورود یا خروج نامعتبر است.')
-  }
-  if (checkOutDate.getTime() <= checkInDate.getTime()) {
+  if (!isValidDateRange(booking.checkIn, booking.checkOut)) {
     throw new BookingValidationError('تاریخ خروج باید بعد از تاریخ ورود باشد.')
   }
 
@@ -71,7 +67,7 @@ function validateBookingRequest(booking: Omit<Booking, 'id' | 'createdAt'>): voi
   }
 
   // قانون ۱: موجودی اتاق باید کنترل بشه
-  if (booking.rooms > room.availableRooms) {
+  if (exceedsRoomAvailability(booking.rooms, room.availableRooms)) {
     throw new BookingValidationError(
       room.availableRooms > 0
         ? `فقط ${room.availableRooms} اتاق از این نوع موجود است.`
@@ -80,10 +76,10 @@ function validateBookingRequest(booking: Omit<Booking, 'id' | 'createdAt'>): voi
   }
 
   // قوانین ۳ و ۴: ظرفیت بر اساس تعداد مهمان *و* تعداد اتاق
-  const guestsCount = booking.adults + booking.children
-  const capacity = room.maxGuests * booking.rooms
-  if (guestsCount > capacity) {
-    throw new BookingValidationError(`ظرفیت این تعداد اتاق حداکثر ${capacity} مهمان است.`)
+  if (exceedsGuestCapacity(booking.adults, booking.children, room.maxGuests, booking.rooms)) {
+    throw new BookingValidationError(
+      `ظرفیت این تعداد اتاق حداکثر ${getGuestCapacity(room.maxGuests, booking.rooms)} مهمان است.`
+    )
   }
 }
 
@@ -132,11 +128,6 @@ export function getBookingById(id: string, requestingUserId?: string): Promise<B
       resolve(applyOverride(found))
     }, 200)
   })
-}
-
-// این تابع همچنان Sync هست چون صفحه Confirmation مستقیم بعد از ساخت بدون تاخیر بهش نیاز داره
-export function getCreatedBookingById(id: string): Booking | undefined {
-  return getCreated().find((b) => b.id === id)
 }
 
 // قوانین ۶ و ۸: فقط رزروهای pending/confirmed قابل لغو هستن، و فقط توسط صاحب رزرو

@@ -20,8 +20,8 @@ import {
   BookingValidationError,
 } from "@/services/bookings";
 import { getCancellationByBookingId } from "@/services/cancellations";
-import { hotels } from "@/data/hotels";
-import { roomTypes } from "@/data/rooms";
+import { getHotelById } from "@/services/hotels";
+import { getRoomById } from "@/services/rooms";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
@@ -90,6 +90,18 @@ export function BookingDetails() {
       query.state.data?.refundStatus === "completed" ? false : 2000,
   });
 
+  // قانون ۱۰/۱۱: هتل و اتاق هم مثل بقیه‌ی صفحات از services میان، نه از data مستقیم
+  const { data: hotel } = useQuery({
+    queryKey: ["hotel", booking?.hotelId],
+    queryFn: () => getHotelById(booking!.hotelId),
+    enabled: !!booking,
+  });
+  const { data: room } = useQuery({
+    queryKey: ["room", booking?.roomTypeId],
+    queryFn: () => getRoomById(booking!.roomTypeId),
+    enabled: !!booking,
+  });
+
   if (isLoading) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
@@ -123,8 +135,6 @@ export function BookingDetails() {
     );
   }
 
-  const hotel = hotels.find((h) => h.id === booking.hotelId);
-  const room = roomTypes.find((r) => r.id === booking.roomTypeId);
   const status = statusLabels[booking.status];
   const canCancel =
     booking.status === "pending" || booking.status === "confirmed";

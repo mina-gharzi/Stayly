@@ -1,159 +1,137 @@
 // src/hooks/useCheckout.ts
-import { useCallback } from 'react'
+// قانون ۱۲: منطق فرم/پرداخت/قیمت‌گذاری/ثبت‌رزرو/ناوبری که قبلاً همه توی pages/Checkout
+// روی هم انباشته شده بود، اینجا متمرکز شده. صفحه فقط UI رو رندر می‌کنه و از این Hook استفاده می‌کنه.
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getHotelById } from '@/services/hotels'
 import { getRoomById } from '@/services/rooms'
-import { mockProcessPayment } from '@/services/payment'
-import { savePayment } from '@/services/payments'
-import { createBooking, BookingValidationError } from '@/services/bookings'
+import { submitBookingPayment, PaymentFailedError, BookingValidationError, type CardDetails } from '@/services/checkout'
 import { useBookingStore } from '@/store/bookingStore'
 import { useAuthStore } from '@/store/authStore'
+import { useToastStore } from '@/store/toastStore'
 import { calculateNights, calculateSubtotal, calculateTaxes, calculateTotal } from '@/utils/pricing'
+import { exceedsRoomAvailability, exceedsGuestCapacity, getGuestCapacity } from '@/utils/bookingRules'
 
-interface PriceBreakdown {
-  nights: number
-  subtotal: number
-  taxAmount: number
-  total: number
-}
-
-interface CheckoutResult {
-  success: boolean
-  bookingId?: string
-  error?: string
-}
-
-export function useCheckout(hotelId: string | undefined, roomTypeId: string | undefined) {
-  const { draft, reset } = useBookingStore()
+export function useCheckout(hotelId: string | undefined, roomTypeId: string) {
+  const navigate = useNavigate()
+  const { draft, setDraft, reset } = useBookingStore()
   const user = useAuthStore((s) => s.user)
+  const showToast = useToastStore((s) => s.show)
 
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // قانون ۱۰: مثل بقیه‌ی صفحات، از services استفاده می‌کنیم — نه ایمپورت مستقیم از data
   const hotelQuery = useQuery({
     queryKey: ['hotel', hotelId],
     queryFn: () => getHotelById(hotelId!),
     enabled: !!hotelId,
   })
-
   const roomQuery = useQuery({
     queryKey: ['room', roomTypeId],
-    queryFn: () => getRoomById(roomTypeId!),
+    queryFn: () => getRoomById(roomTypeId),
     enabled: !!roomTypeId,
   })
+
+  useEffect(() => {
+    if (hotelId && roomTypeId && (draft.hotelId !== hotelId || draft.roomTypeId !== roomTypeId)) {
+      const checkIn = draft.checkIn || new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10)
+      const checkOut = draft.checkOut || new Date(Date.now() + 10 * 86400000).toISOString().slice(0, 10)
+      setDraft({ hotelId, roomTypeId, checkIn, checkOut })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hotelId, roomTypeId])
 
   const hotel = hotelQuery.data
   const room = roomQuery.data
 
-  const priceBreakdown: PriceBreakdown | null = hotel && room && draft.checkIn && draft.checkOut
-    ? (() => {
-        const nights = calculateNights(draft.checkIn, draft.checkOut)
-        const subtotal = calculateSubtotal(room.pricePerNight, nights, draft.rooms)
-        const taxAmount = calculateTaxes(subtotal)
-        const total = calculateTotal(subtotal, taxAmount, 0)
-        return { nights, subtotal, taxAmount, total }
-      })()
-    : null
+  const nights = calculateNights(draft.checkIn, draft.checkOut)
+  const subtotal = room ? calculateSubtotal(room.pricePerNight, nights, draft.rooms) : 0
+  const taxAmount = calculateTaxes(subtotal)
+  const total = calculateTotal(subtotal, taxAmount, 0)
 
-  const validateAvailability = useCallback(async (): Promise<string | null> => {
-    if (!draft.roomTypeId || !draft.rooms || !draft.adults || !draft.children) {
-      return 'اطلاعات رزرو ناقص است.'
+  const isLoading = hotelQuery.isLoading || roomQuery.isLoading
+  const isError = hotelQuery.isError || roomQuery.isError
+  const notFound = !isLoading && !isError && (!hotel || !room)
+
+  const draftIncomplete = !draft.hotelId || !draft.roomTypeId || !draft.guestInfo
+
+  async function submit(card: CardDetails) {
+    setSubmitError(null)
+
+    if (!room || !draft.hotelId || !draft.roomTypeId || !draft.guestInfo) {
+      setSubmitError('اطلاعات رزرو ناقص است.')
+      return
     }
 
-    const latestRoom = await getRoomById(draft.roomTypeId)
-    if (!latestRoom) {
-      return 'اتاق مورد نظر یافت نشد.'
+    // اعتبارسنجی فوری سمت کلاینت قبل از پرداخت — تا کسی بابت رزروی که ممکنه رد بشه پول
+    // پرداخت نکنه. لایه‌ی نهایی و غیرقابل‌دور‌زدن همچنان داخل submitBookingPayment است.
+    if (exceedsRoomAvailability(draft.rooms, room.availableRooms)) {
+      setSubmitError(
+        room.availableRooms > 0
+          ? `فقط ${room.availableRooms} اتاق از این نوع موجود است.`
+          : 'ظرفیت این نوع اتاق تکمیل شده است.'
+      )
+      return
     }
-    if (draft.rooms > latestRoom.availableRooms) {
-      return latestRoom.availableRooms > 0
-        ? `فقط ${latestRoom.availableRooms} اتاق از این نوع موجود است.`
-        : 'ظرفیت این نوع اتاق تکمیل شده است.'
-    }
-    const guestsCount = draft.adults + draft.children
-    const capacity = latestRoom.maxGuests * draft.rooms
-    if (guestsCount > capacity) {
-      return `ظرفیت این تعداد اتاق حداکثر ${capacity} مهمان است.`
-    }
-    return null
-  }, [draft.roomTypeId, draft.rooms, draft.adults, draft.children])
-
-  const processPaymentAndCreateBooking = useCallback(async (values: {
-    cardNumber: string
-    cardHolder: string
-    expiry: string
-    cvv: string
-  }): Promise<CheckoutResult> => {
-    if (!priceBreakdown || !hotel || !room || !draft.guestInfo) {
-      return { success: false, error: 'اطلاعات رزرو ناقص است.' }
+    if (exceedsGuestCapacity(draft.adults, draft.children, room.maxGuests, draft.rooms)) {
+      setSubmitError(`ظرفیت این تعداد اتاق حداکثر ${getGuestCapacity(room.maxGuests, draft.rooms)} مهمان است.`)
+      return
     }
 
-    const availabilityError = await validateAvailability()
-    if (availabilityError) {
-      return { success: false, error: availabilityError }
-    }
-
-    const result = await mockProcessPayment({
-      cardNumber: values.cardNumber,
-      cardHolder: values.cardHolder,
-      expiry: values.expiry,
-      cvv: values.cvv,
-      amount: priceBreakdown.total,
-    })
-
-    const payment = await savePayment({
-      bookingId: '',
-      status: result.status,
-      cardLast4: result.cardLast4,
-      amount: priceBreakdown.total,
-      processedAt: new Date().toISOString(),
-    })
-
-    if (result.status === 'failed') {
-      return { success: false, error: 'پرداخت ناموفق بود. لطفاً اطلاعات کارت را بررسی و دوباره تلاش کنید.' }
-    }
-
+    setIsSubmitting(true)
     try {
-      const booking = await createBooking({
+      const { booking } = await submitBookingPayment({
         userId: user?.id ?? 'guest',
-        hotelId: draft.hotelId!,
-        roomTypeId: draft.roomTypeId!,
+        hotelId: draft.hotelId,
+        roomTypeId: draft.roomTypeId,
         checkIn: draft.checkIn,
         checkOut: draft.checkOut,
         adults: draft.adults,
         children: draft.children,
         rooms: draft.rooms,
-        guestInfo: draft.guestInfo!,
+        guestInfo: draft.guestInfo,
         priceBreakdown: {
           pricePerNight: room.pricePerNight,
-          nights: priceBreakdown.nights,
-          subtotal: priceBreakdown.subtotal,
+          nights,
+          subtotal,
           taxRate: 0.1,
-          taxAmount: priceBreakdown.taxAmount,
+          taxAmount,
           discount: 0,
-          total: priceBreakdown.total,
+          total,
         },
-        status: 'confirmed',
-        paymentId: payment.id,
+        card,
       })
 
-      reset()
-      return { success: true, bookingId: booking.id }
+      reset() // پاک کردن Draft بعد از تکمیل موفق رزرو
+      navigate(`/confirmation/${booking.id}`)
     } catch (err) {
       const message =
-        err instanceof BookingValidationError
+        err instanceof PaymentFailedError || err instanceof BookingValidationError
           ? err.message
           : 'ثبت رزرو با مشکل مواجه شد. لطفاً دوباره تلاش کنید.'
-      return { success: false, error: message }
+      setSubmitError(message)
+      showToast(message, 'error')
+    } finally {
+      setIsSubmitting(false)
     }
-  }, [priceBreakdown, hotel, room, draft, user, validateAvailability, reset])
+  }
 
   return {
+    draft,
     hotel,
     room,
-    hotelQuery,
-    roomQuery,
-    priceBreakdown,
-    draft,
-    validateAvailability,
-    processPaymentAndCreateBooking,
-    isLoading: hotelQuery.isLoading || roomQuery.isLoading,
-    isError: hotelQuery.isError || roomQuery.isError,
+    isLoading,
+    isError,
+    notFound,
+    draftIncomplete,
+    nights,
+    subtotal,
+    taxAmount,
+    total,
+    submit,
+    submitError,
+    isSubmitting,
   }
 }

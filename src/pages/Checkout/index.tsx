@@ -1,5 +1,6 @@
 // src/pages/Checkout/index.tsx
-import { useState } from 'react'
+// قانون ۱۲: این صفحه دیگه مسئول Pricing/Payment/Booking Creation/Navigation نیست —
+// همه‌ی اون منطق داخل useCheckout و services/checkout.ts متمرکز شده. اینجا فقط فرم و UI هست.
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,6 +9,7 @@ import { useCheckout } from '@/hooks/useCheckout'
 import { paymentSchema, type PaymentFormValues } from '@/schemas/payment'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { formatToman } from '@/utils/currency'
 import { BookingSummaryCard } from '@/components/booking/BookingSummaryCard'
 import { FadeIn } from '@/components/common/FadeIn'
@@ -17,26 +19,30 @@ export function Checkout() {
   const [searchParams] = useSearchParams()
   const roomTypeId = searchParams.get('roomTypeId') ?? ''
   const navigate = useNavigate()
-  const [paymentError, setPaymentError] = useState(false)
-  const [availabilityError, setAvailabilityError] = useState<string | null>(null)
 
   const {
+    draft,
     hotel,
     room,
-    priceBreakdown,
-    draft,
-    processPaymentAndCreateBooking,
     isLoading,
     isError,
+    notFound,
+    draftIncomplete,
+    nights,
+    subtotal,
+    taxAmount,
+    total,
+    submit,
+    submitError,
+    isSubmitting,
   } = useCheckout(hotelId, roomTypeId)
 
-  // این فرم فقط اطلاعات کارت رو نگه می‌داره — به‌هیچ‌وجه با draft.guestInfo/Zustand قاطی نمی‌شه
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<PaymentFormValues>({
+  const { register, handleSubmit, formState: { errors } } = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
   })
 
   // اگه هنوز اطلاعات مسافر (مرحله قبل) کامل نشده، اصلاً نباید به این صفحه برسه
-  if (!hotel || !room || !priceBreakdown) {
+  if (draftIncomplete) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
         <p className="font-medium text-neutral-900">اطلاعات رزرو ناقص است</p>
@@ -46,11 +52,31 @@ export function Checkout() {
     )
   }
 
+  // ── حالت لودینگ ──
   if (isLoading) {
-    return <div className="mx-auto max-w-5xl px-4 py-8"><div className="h-48 w-full rounded-2xl bg-neutral-200" /></div>
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <Skeleton className="h-96 w-full rounded-2xl lg:col-span-2" />
+          <Skeleton className="h-80 w-full rounded-2xl lg:col-span-1" />
+        </div>
+      </div>
+    )
   }
 
-  if (isError || !hotel || !room) {
+  // ── حالت خطا (مثلاً سرویس نتونست اطلاعات هتل/اتاق رو بگیره) ──
+  if (isError) {
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-16 text-center">
+        <p className="font-medium text-neutral-900">مشکلی در دریافت اطلاعات پیش آمد</p>
+        <p className="mt-1 text-sm text-neutral-600">لطفاً دوباره تلاش کنید.</p>
+        <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>تلاش دوباره</Button>
+      </div>
+    )
+  }
+
+  // ── حالت خالی (هتل/اتاق پیدا نشد) ──
+  if (notFound || !hotel || !room) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-16 text-center">
         <p className="font-medium text-neutral-900">اتاق یا هتل مورد نظر یافت نشد</p>
@@ -59,24 +85,8 @@ export function Checkout() {
     )
   }
 
-  const { nights, subtotal, taxAmount, total } = priceBreakdown
-
-  async function onSubmit(values: PaymentFormValues) {
-    setPaymentError(false)
-    setAvailabilityError(null)
-
-    const result = await processPaymentAndCreateBooking(values)
-
-    if (!result.success) {
-      if (result.error?.includes('ظرفیت') || result.error?.includes('مهمان') || result.error?.includes('اتاق')) {
-        setAvailabilityError(result.error)
-      } else {
-        setPaymentError(true)
-      }
-      return
-    }
-
-    navigate(`/confirmation/${result.bookingId}`)
+  function onSubmit(values: PaymentFormValues) {
+    return submit(values)
   }
 
   return (
@@ -98,17 +108,10 @@ export function Checkout() {
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-card sm:p-8">
             <h2 className="font-semibold text-neutral-900">اطلاعات کارت</h2>
 
-            {paymentError && (
+            {submitError && (
               <div className="flex items-center gap-2 rounded-md bg-error-100 p-3 text-sm text-error-500">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                پرداخت ناموفق بود. لطفاً اطلاعات کارت را بررسی و دوباره تلاش کنید.
-              </div>
-            )}
-
-            {availabilityError && (
-              <div className="flex items-center gap-2 rounded-md bg-error-100 p-3 text-sm text-error-500">
-                <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                {availabilityError}
+                {submitError}
               </div>
             )}
 

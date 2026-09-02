@@ -22,13 +22,6 @@ export interface HotelSearchResult {
   pageSize: number
   totalPages: number
 }
-export function getHotelByIdSync(id: string): Hotel | undefined {
-  return hotels.find((h) => h.id === id)
-}
-
-export function getHotelsByIdsSync(ids: string[]): Hotel[] {
-  return hotels.filter((h) => ids.includes(h.id))
-}
 
 export function getHotels(filters: HotelSearchFilters): Promise<HotelSearchResult> {
   return new Promise((resolve) => {

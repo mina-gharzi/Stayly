@@ -14,6 +14,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FadeIn } from "@/components/common/FadeIn";
 import { formatToman } from "@/utils/currency";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import type { RoomType } from "@/types";
 
 export function HotelDetails() {
@@ -21,6 +22,8 @@ export function HotelDetails() {
   const navigate = useNavigate();
   const { hotel, rooms, reviews, isLoading, isError, refetch } =
     useHotelDetails(hotelId!);
+
+  usePageTitle(hotel?.name);
 
   function handleSelectRoom(room: RoomType) {
     navigate(`/booking/${hotelId}?roomTypeId=${room.id}`);

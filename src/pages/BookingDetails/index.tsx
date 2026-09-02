@@ -31,6 +31,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { formatToman } from "@/utils/currency";
 import { useToastStore } from "@/store/toastStore";
 import { useAuthStore } from "@/store/authStore";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { cn } from "@/utils/cn";
 
 const statusLabels: Record<
@@ -102,6 +103,8 @@ export function BookingDetails() {
     queryFn: () => getRoomById(booking!.roomTypeId),
     enabled: !!booking,
   });
+
+  usePageTitle(hotel?.name ? `${hotel.name} | جزئیات رزرو` : undefined);
 
   if (isLoading) {
     return (

@@ -11,6 +11,7 @@ import { getHotelById } from '@/services/hotels'
 import { getRoomById } from '@/services/rooms'
 import { useAuthStore } from '@/store/authStore'
 import { formatToman } from '@/utils/currency'
+import { usePageTitle } from '@/hooks/usePageTitle'
 import { FadeIn } from '@/components/common/FadeIn'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -39,6 +40,8 @@ export function Confirmation() {
     queryFn: () => getRoomById(booking!.roomTypeId),
     enabled: !!booking,
   })
+
+  usePageTitle(hotelQuery.data?.name ? `${hotelQuery.data.name} | تأیید رزرو` : undefined)
 
   if (bookingQuery.isLoading) {
     return (

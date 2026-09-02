@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Layout } from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { PageTitleManager } from "@/components/common/PageTitleManager";
 import { Home } from "@/pages/Home";
 
 const Hotels = lazy(() =>
@@ -60,6 +61,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <PageTitleManager />
         <Suspense fallback={<PageLoading />}>
           <Routes>
             <Route element={<Layout />}>

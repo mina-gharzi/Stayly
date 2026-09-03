@@ -14,6 +14,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
+import { updateProfile, ProfileUpdateError } from "@/services/auth";
 import { profileSchema, type ProfileFormValues } from "@/schemas/profile";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -31,6 +32,7 @@ export function Profile() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting, isDirty },
     reset,
   } = useForm<ProfileFormValues>({
@@ -45,10 +47,20 @@ export function Profile() {
   });
 
   async function onSubmit(values: ProfileFormValues) {
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    updateUser(values);
-    showToast("پروفایل با موفقیت به‌روزرسانی شد", "success");
-    setIsEditing(false);
+    if (!user) return;
+    try {
+      // منبع حقیقتِ نهایی برای لاگین (registered users) رو اول آپدیت می‌کنیم، بعد session رو
+      const updated = await updateProfile(user.id, values);
+      updateUser(updated);
+      showToast("پروفایل با موفقیت به‌روزرسانی شد", "success");
+      setIsEditing(false);
+    } catch (err) {
+      if (err instanceof ProfileUpdateError) {
+        setError("email", { message: err.message });
+      } else {
+        showToast("به‌روزرسانی پروفایل با مشکل مواجه شد. لطفاً دوباره تلاش کنید.", "error");
+      }
+    }
   }
 
   function handleLogout() {
@@ -71,9 +83,16 @@ export function Profile() {
     }
 
     const reader = new FileReader();
-    reader.onload = () => {
-      updateUser({ avatar: reader.result as string });
-      showToast("عکس پروفایل با موفقیت به‌روزرسانی شد", "success");
+    reader.onload = async () => {
+      if (!user) return;
+      try {
+        const avatar = reader.result as string;
+        const updated = await updateProfile(user.id, { avatar });
+        updateUser(updated);
+        showToast("عکس پروفایل با موفقیت به‌روزرسانی شد", "success");
+      } catch {
+        showToast("بارگذاری تصویر ناموفق بود", "error");
+      }
     };
     reader.onerror = () => {
       showToast("بارگذاری تصویر ناموفق بود", "error");

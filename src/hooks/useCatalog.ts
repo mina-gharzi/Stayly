@@ -1,13 +1,20 @@
 // src/hooks/useCatalog.ts
 // هوک‌های React Query برای داده‌های کاتالوگ که از طریق سرویس (not data/ مستقیم) می‌آن.
 import { useQuery } from '@tanstack/react-query'
-import { getHotels, getHotelsByIds, getHotelCountsByType } from '@/services/hotels'
+import { getHotels, getHotelsByIds, getHotelCountsByType, getHotelCountsByCity } from '@/services/hotels'
 import { getCatalogStats } from '@/services/catalog'
 
 export function useFeaturedHotels() {
   return useQuery({
     queryKey: ['featured-hotels'],
     queryFn: () => getHotels({ sort: 'rating-desc', pageSize: 6 }),
+  })
+}
+
+export function useHotelCountsByCity() {
+  return useQuery({
+    queryKey: ['hotel-counts-by-city'],
+    queryFn: () => getHotelCountsByCity(),
   })
 }
 

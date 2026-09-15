@@ -91,6 +91,17 @@ export function getHotelsByIds(ids: string[]): Promise<Hotel[]> {
   })
 }
 
+// تعداد اقامتگاه‌ها به تفکیک شهر — برای نمایش تعداد روی کارت‌های مقصد
+export function getHotelCountsByCity(): Promise<Record<string, number>> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const counts: Record<string, number> = {}
+      for (const h of hotels) counts[h.cityId] = (counts[h.cityId] || 0) + 1
+      resolve(counts)
+    }, 200)
+  })
+}
+
 // تعداد اقامتگاه‌ها به تفکیک نوع اقامتگاه — برای «جستجو بر اساس نوع اقامتگاه»
 export function getHotelCountsByType(): Promise<Record<PropertyType, number>> {
   return new Promise((resolve) => {

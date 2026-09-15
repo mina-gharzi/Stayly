@@ -12,9 +12,14 @@ export interface GuestValue {
 interface GuestSelectorProps {
   value: GuestValue;
   onChange: (value: GuestValue) => void;
+  bare?: boolean;
 }
 
-export function GuestSelector({ value, onChange }: GuestSelectorProps) {
+export function GuestSelector({
+  value,
+  onChange,
+  bare = false,
+}: GuestSelectorProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -44,7 +49,6 @@ export function GuestSelector({ value, onChange }: GuestSelectorProps) {
     { key: "rooms", label: "اتاق", min: 1 },
   ];
 
-  const summary = `${value.adults} بزرگسال · ${value.children} کودک · ${value.rooms} اتاق`;
   const panelId = "guest-selector-panel";
 
   return (
@@ -55,13 +59,27 @@ export function GuestSelector({ value, onChange }: GuestSelectorProps) {
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls={panelId}
-        className="flex h-12 w-full items-center gap-3 rounded-xl border border-neutral-200 bg-neutral-50/50 pr-4 pl-4 text-sm text-neutral-900 transition-all duration-200 hover:border-neutral-300 focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/10"
+        className={
+          bare
+            ? "flex h-12 w-full items-center gap-2.5 px-1 text-start text-sm text-neutral-900 focus:outline-none sm:px-4"
+            : "flex h-12 w-full items-center gap-3 rounded-xl border border-neutral-200 bg-neutral-50/50 px-4 text-sm text-neutral-900 transition-all duration-200 hover:border-neutral-300 focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/10"
+        }
       >
-        <Users className="h-icon-sm w-icon-sm shrink-0 text-neutral-400" aria-hidden />
-        <span className="flex-1 text-start">{summary}</span>
+        <Users
+          className="h-4 w-4 shrink-0 text-neutral-400"
+          aria-hidden
+        />
+        <span className="flex flex-col text-start">
+          <span className="text-[10px] font-medium text-neutral-500">
+            مهمانان
+          </span>
+          <span className="font-mono text-xs font-semibold text-neutral-900 sm:text-sm">
+            {value.adults} بزرگسال · {value.rooms} اتاق
+          </span>
+        </span>
         <ChevronIcon
           className={cn(
-            "h-4 w-4 text-neutral-400 transition-transform duration-200",
+            "ms-auto h-4 w-4 text-neutral-400 transition-transform duration-200",
             open && "rotate-180",
           )}
         />
@@ -71,7 +89,7 @@ export function GuestSelector({ value, onChange }: GuestSelectorProps) {
         <div
           id={panelId}
           role="listbox"
-          className="absolute inset-x-0 top-full z-50 mt-2 w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white p-4 shadow-elevated"
+          className="absolute inset-x-0 top-full z-50 mt-2 w-full min-w-58 overflow-hidden rounded-2xl border border-neutral-200 bg-white p-4 shadow-elevated"
         >
           {rows.map((row, i) => (
             <div

@@ -1,162 +1,298 @@
 // src/components/home/SearchBox.tsx
-import { useState, useRef, type FormEvent } from "react";
+import { useState, useRef, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, MapPin, ChevronDown, ChevronLeft } from "lucide-react";
+import { Search, MapPin, ChevronDown, Calendar, Check } from "lucide-react";
 import { getCities } from "@/services/catalog";
+import { useBookingStore } from "@/store/bookingStore";
+import { GuestSelector, type GuestValue } from "@/components/ui/GuestSelector";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/utils/cn";
+
+function toISODate(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function todayPlus(days: number) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return toISODate(d);
+}
+
+function addDays(value: string, days: number) {
+  if (!value) return todayPlus(days);
+  const d = new Date(`${value}T00:00:00`);
+  d.setDate(d.getDate() + days);
+  return toISODate(d);
+}
+
+function formatDate(value: string) {
+  if (!value) return "—";
+  const d = new Date(`${value}T00:00:00`);
+  return new Intl.DateTimeFormat("fa-IR", {
+    month: "short",
+    day: "numeric",
+  }).format(d);
+}
+
+function DestinationSelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const cities = getCities();
+  const selected = cities.find((c) => c.id === value);
+
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  const panelId = "destination-panel";
+
+  return (
+    <div ref={ref} className="relative flex-1">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={panelId}
+        className="flex h-12 w-full items-center gap-2.5 px-1 text-start focus:outline-none sm:px-4"
+      >
+        <MapPin className="h-4 w-4 shrink-0 text-neutral-400" aria-hidden />
+        <span className="flex min-w-0 flex-col text-start">
+          <span className="text-[10px] font-medium text-neutral-500">
+            مقصد
+          </span>
+          <span className="truncate font-mono text-sm font-semibold text-neutral-900">
+            {selected?.name ?? "انتخاب شهر"}
+          </span>
+        </span>
+        <ChevronDown
+          className={cn(
+            "ms-auto h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-200",
+            open && "rotate-180",
+          )}
+          aria-hidden
+        />
+      </button>
+
+      {open && (
+        <div
+          id={panelId}
+          role="listbox"
+          className="absolute start-0 top-full z-50 mt-2 w-72 max-w-[85vw] overflow-hidden rounded-2xl border border-neutral-200 bg-white p-2 shadow-elevated"
+        >
+          <p className="px-3 pb-1.5 pt-1 text-xs font-medium text-neutral-500">
+            انتخاب مقصد
+          </p>
+          {cities.map((city) => (
+            <button
+              key={city.id}
+              type="button"
+              role="option"
+              aria-selected={city.id === value}
+              onClick={() => {
+                onChange(city.id);
+                setOpen(false);
+              }}
+              className={cn(
+                "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-neutral-50",
+                city.id === value && "bg-primary-50",
+              )}
+            >
+              <span className="flex items-center gap-2.5">
+                <span
+                  className={cn(
+                    "flex h-7 w-7 items-center justify-center rounded-lg",
+                    city.id === value
+                      ? "bg-primary-100 text-primary-700"
+                      : "bg-neutral-100 text-neutral-400",
+                  )}
+                >
+                  <MapPin className="h-3.5 w-3.5" aria-hidden />
+                </span>
+                <span
+                  className={cn(
+                    "font-semibold",
+                    city.id === value ? "text-primary-700" : "text-neutral-800",
+                  )}
+                >
+                  {city.name}
+                </span>
+              </span>
+              {city.id === value && (
+                <Check className="h-4 w-4 text-primary-600" aria-hidden />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DateField({
+  label,
+  value,
+  min,
+  onValueChange,
+}: {
+  label: string;
+  value: string;
+  min: string;
+  onValueChange: (value: string) => void;
+}) {
+  return (
+    <div className="relative flex h-12 items-center gap-2.5 px-1 sm:flex-1 sm:px-4">
+      <Calendar className="hidden h-4 w-4 shrink-0 text-neutral-400 sm:block" aria-hidden />
+      <div className="flex flex-col text-start">
+        <span className="text-[10px] font-medium text-neutral-500">
+          {label}
+        </span>
+        <span className="font-mono text-xs font-semibold text-neutral-900 sm:text-sm">
+          {formatDate(value)}
+        </span>
+      </div>
+      <input
+        type="date"
+        value={value}
+        min={min}
+        onChange={(e) => onValueChange(e.target.value)}
+        aria-label={label}
+        className="absolute inset-0 h-full w-full cursor-pointer bg-transparent text-transparent opacity-0 focus:outline-none [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0"
+      />
+    </div>
+  );
+}
 
 export function SearchBox() {
   const navigate = useNavigate();
-  const allCities = getCities();
-  const [destination, setDestination] = useState(allCities[0]?.id ?? "");
-  const cityRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const { draft, setDraft } = useBookingStore();
 
-  function selectCity(id: string) {
-    setDestination(id);
-    // اسکرول ملایم به شهر انتخابشده (موبایل)
-    cityRefs.current[id]?.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest",
-    });
+  const [destination, setDestination] = useState(
+    () => getCities()[0]?.id ?? "",
+  );
+  const [checkIn, setCheckIn] = useState(() => draft.checkIn || todayPlus(1));
+  const [checkOut, setCheckOut] = useState(() => draft.checkOut || todayPlus(4));
+  const [guests, setGuests] = useState<GuestValue>(() => ({
+    adults: draft.adults || 2,
+    children: draft.children || 0,
+    rooms: draft.rooms || 1,
+  }));
+
+  function handleCheckInChange(value: string) {
+    setCheckIn(value);
+    if (value && checkOut && value >= checkOut) {
+      setCheckOut(addDays(value, 1));
+    }
   }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setDraft({
+      checkIn,
+      checkOut,
+      adults: guests.adults,
+      children: guests.children,
+      rooms: guests.rooms,
+    });
     const params = new URLSearchParams();
     if (destination) params.set("destination", destination);
     params.set("page", "1");
     navigate(`/hotels?${params.toString()}`);
   }
 
-  const popularCities = allCities.slice(0, 5);
-  const selectedCity = allCities.find((c) => c.id === destination);
-
   return (
-    <div className="relative flex w-full max-w-8xl items-center justify-center">
-      {/* لیست عمودی شهرها — دسکتاپ */}
-      <div className="absolute right-0 top-1/2 hidden -translate-y-1/2 flex-col gap-3.5 pr-2 lg:flex xl:right-8">
-        {popularCities.map((city) => {
-          const isSelected = destination === city.id;
-          return (
-            <button
-              key={city.id}
-              type="button"
-              ref={(el) => {
-                cityRefs.current[city.id] = el;
-              }}
-              onClick={() => selectCity(city.id)}
-              className={`group flex items-center gap-3 text-right transition-colors duration-300 ${
-                isSelected ? "text-white" : "text-white/50 hover:text-white/80"
-              }`}
-            >
-              {isSelected && (
-                <span className="flex items-center">
-                  <span className="h-px w-6 bg-white" />
-                  <ChevronLeft className="h-4 w-4" />
-                </span>
-              )}
-              <span
-                className={`font-mono uppercase tracking-widest transition-all duration-300 ${
-                  isSelected ? "text-lg font-bold" : "text-sm font-medium"
-                }`}
-              >
-                {city.name}
-              </span>
-            </button>
-          );
-        })}
-        <button
-          type="button"
-          className="mt-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white shadow-elevated transition-transform hover:scale-105"
-        >
-          <ChevronDown className="h-5 w-5" />
-        </button>
-      </div>
+    <form
+      onSubmit={handleSubmit}
+      className="w-full rounded-2xl bg-white p-2 shadow-float sm:rounded-3xl sm:p-2.5"
+    >
+      {/* ── موبایل: کارت ستونی مینیمال ── */}
+      <div className="divide-y divide-neutral-100 sm:hidden">
+        <DestinationSelect value={destination} onChange={setDestination} />
 
-      {/* نوار جستجو + چیپهای موبایل + فیلترها */}
-      <div className="mx-auto flex w-full max-w-xl flex-col items-center">
-        {/* چیپهای افقی شهرها — موبایل */}
-        <div className="mb-4 flex w-full gap-5 overflow-x-auto pb-1 pt-1 lg:hidden scrollbar-none [&::-webkit-scrollbar]:hidden">
-          {popularCities.map((city) => {
-            const isSelected = destination === city.id;
-            return (
-              <button
-                key={city.id}
-                type="button"
-                ref={(el) => {
-                  cityRefs.current[city.id] = el;
-                }}
-                onClick={() => selectCity(city.id)}
-                className="group flex shrink-0 flex-col items-center gap-1.5 transition-all duration-300"
-              >
-                <span
-                  className={`font-mono uppercase tracking-widest transition-all duration-300 ${
-                    isSelected
-                      ? "text-base font-bold text-white"
-                      : "text-sm font-medium text-white/50 group-hover:text-white/80"
-                  }`}
-                >
-                  {city.name}
-                </span>
-                <span
-                  className={`h-0.5 rounded-full bg-primary-500 transition-all duration-300 ${
-                    isSelected ? "w-8 opacity-100" : "w-0 opacity-0"
-                  }`}
-                />
-              </button>
-            );
-          })}
+        <div className="grid grid-cols-2 divide-x divide-neutral-100">
+          <DateField
+            label="ورود"
+            value={checkIn}
+            min={todayPlus(0)}
+            onValueChange={handleCheckInChange}
+          />
+          <DateField
+            label="خروج"
+            value={checkOut}
+            min={addDays(checkIn, 1)}
+            onValueChange={setCheckOut}
+          />
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="flex w-full items-center gap-2 rounded-full bg-white p-2 shadow-elevated"
-        >
-          <div className="flex flex-1 items-center gap-3 rounded-full bg-neutral-100 px-5 py-3">
-            <Search className="h-4 w-4 shrink-0 text-neutral-400" />
-            <span className="font-mono text-sm font-semibold uppercase tracking-wide text-neutral-900">
-              {selectedCity?.name ?? "انتخاب شهر"}
-            </span>
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <GuestSelector bare value={guests} onChange={setGuests} />
           </div>
           <Button
             type="submit"
-            className="rounded-full bg-primary-600 px-7 py-3.5 text-sm font-bold text-white transition-colors hover:bg-primary-700"
+            className="h-12 shrink-0 rounded-full bg-primary-600 font-bold text-white transition-all duration-300 hover:bg-primary-700 active:scale-95"
           >
-            جستجو
+            <Search className="h-4 w-4" aria-hidden />
+            <span className="text-sm">جستجو</span>
           </Button>
-        </form>
-
-        {/* فیلترها */}
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-          <button
-            type="button"
-            className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur-md transition-colors hover:bg-white/20"
-          >
-            <MapPin className="h-3.5 w-3.5" />
-            کشف مقصدها
-          </button>
-          <button
-            type="button"
-            className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur-md transition-colors hover:bg-white/20"
-          >
-            هتل
-          </button>
-          <button
-            type="button"
-            className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur-md transition-colors hover:bg-white/20"
-          >
-            استراحتگاه
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur-md transition-colors hover:bg-white/20"
-          >
-            بیشتر
-            <ChevronDown className="h-3.5 w-3.5" />
-          </button>
         </div>
       </div>
-    </div>
+
+      {/* ── دسکتاپ: نوار تفکیک‌شده ── */}
+      <div className="hidden sm:flex sm:flex-row sm:items-center sm:gap-0">
+        <DestinationSelect value={destination} onChange={setDestination} />
+
+        <div className="hidden h-8 w-px shrink-0 bg-neutral-100 sm:block" />
+        <DateField
+          label="ورود"
+          value={checkIn}
+          min={todayPlus(0)}
+          onValueChange={handleCheckInChange}
+        />
+
+        <div className="hidden h-8 w-px shrink-0 bg-neutral-100 sm:block" />
+        <DateField
+          label="خروج"
+          value={checkOut}
+          min={addDays(checkIn, 1)}
+          onValueChange={setCheckOut}
+        />
+
+        <div className="hidden h-8 w-px shrink-0 bg-neutral-100 sm:block" />
+        <div className="sm:flex-1">
+          <GuestSelector bare value={guests} onChange={setGuests} />
+        </div>
+
+        <Button
+          type="submit"
+          size="lg"
+          className="mt-1 w-full shrink-0 rounded-xl bg-primary-600 font-bold text-white transition-all duration-300 hover:bg-primary-700 sm:mt-0 sm:w-36 sm:rounded-full sm:text-sm"
+        >
+          <span className="hidden sm:inline">جستجو</span>
+          <Search className="h-4 w-4 sm:hidden" aria-hidden />
+        </Button>
+      </div>
+    </form>
   );
 }

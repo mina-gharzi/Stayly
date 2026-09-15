@@ -7,7 +7,7 @@ const testimonials = [
     name: "Sophie Laurent",
     avatar: "https://i.pravatar.cc/150?img=3",
     location: "پاریس",
-    text: "چشم‌انداز خیره‌کننده برج‌های شعله و سرویس‌دهی بی‌نقص. حتماً دوباره برمی‌گردم.",
+    text: "گوشه‌ای دنج در قلب محله لو مره با حال‌وهوای پاریس قدیم؛ از صبحانه تا پذیرش، همه‌چیز بی‌نقص بود.",
     rating: 9.5,
   },
   {
@@ -46,7 +46,7 @@ export function TestimonialStrip() {
             <h2 className="mt-3 text-[20px] font-bold text-neutral-900 sm:text-[24px]">
               نظرات مسافران ما
             </h2>
-            <p className="mx-auto mt-3 max-w-sm text-[14px] text-neutral-400">
+            <p className="mx-auto mt-3 max-w-sm text-[14px] text-neutral-500">
               نظرات واقعی مسافران ما از سراسر دنیا
             </p>
           </div>
@@ -86,6 +86,8 @@ export function TestimonialStrip() {
                     <img
                       src={t.avatar}
                       alt={t.name}
+                      loading="lazy"
+                      decoding="async"
                       className="h-10 w-10 rounded-full object-cover ring-2 ring-primary-100 transition-all duration-300 group-hover:ring-primary-200"
                     />
                     {/* نقطه وضعیت */}
@@ -97,7 +99,7 @@ export function TestimonialStrip() {
                     <p className="text-[14px] font-bold text-neutral-900">
                       {t.name}
                     </p>
-                    <p className="text-[11px] font-medium text-neutral-400">
+                    <p className="text-[11px] font-medium text-neutral-500">
                       {t.location}
                     </p>
                   </div>

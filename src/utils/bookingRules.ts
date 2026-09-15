@@ -12,6 +12,15 @@ export function isValidDateRange(checkIn: string, checkOut: string): boolean {
   return outDate.getTime() > inDate.getTime()
 }
 
+/** آیا تاریخ ورود در گذشته است؟ (رزرو فقط برای امروز یا آینده مجاز است) */
+export function isDateInPast(date: string): boolean {
+  const d = new Date(date)
+  if (Number.isNaN(d.getTime())) return false
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return d.getTime() < today.getTime()
+}
+
 /** ظرفیت مجاز مهمان برای یک نوع اتاق با تعداد اتاق مشخص — قانون ۴: maxGuests × rooms */
 export function getGuestCapacity(maxGuestsPerRoom: number, rooms: number): number {
   return maxGuestsPerRoom * rooms

@@ -2,7 +2,7 @@
 // قانون ۱۳: این صفحه قبلاً هم UI جزئیات اقامت، هم فرم اطلاعات مسافر، هم پیام‌های اعتبارسنجی
 // رو با هم داشت. الان اون بخش‌ها به StayDetailsCard و GuestInfoFields منتقل شدن و این صفحه
 // فقط queryها، state رزرو (draft) و ترکیب Componentها رو مدیریت می‌کنه.
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -43,6 +43,7 @@ export function Booking() {
   const roomTypeId = searchParams.get("roomTypeId") ?? "";
   const navigate = useNavigate();
   const { draft, setDraft } = useBookingStore();
+  const [submitting, setSubmitting] = useState(false);
 
   const hotelQuery = useQuery({
     queryKey: ["hotel", hotelId],
@@ -141,6 +142,8 @@ export function Booking() {
   const canSubmit = validDates && !exceedsCapacity && !exceedsAvailability;
 
   function onSubmit(values: GuestInfoFormValues) {
+    if (submitting) return;
+    setSubmitting(true);
     setDraft({
       guestInfo: { ...values, specialRequests: values.specialRequests ?? "" },
     });
@@ -202,7 +205,7 @@ export function Booking() {
               <Button
                 type="submit"
                 size="lg"
-                disabled={!canSubmit}
+                disabled={!canSubmit || submitting}
                 className="mt-2 w-full rounded-xl"
               >
                 ادامه به پرداخت

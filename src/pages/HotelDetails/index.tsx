@@ -14,6 +14,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FadeIn } from "@/components/common/FadeIn";
 import { formatToman } from "@/utils/currency";
+import { ratingLabel } from "@/utils/ratings";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import type { RoomType } from "@/types";
 
@@ -123,11 +124,7 @@ export function HotelDetails() {
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-neutral-900">
-                    {hotel.guestRating >= 4.5
-                      ? "فوق‌العاده"
-                      : hotel.guestRating >= 4.0
-                        ? "بسیار خوب"
-                        : "خوب"}
+                    {ratingLabel(hotel.guestRating)}
                   </p>
                   <p className="text-xs text-neutral-500">
                     {hotel.reviewCount} نظر ثبت شده
@@ -238,6 +235,7 @@ export function HotelDetails() {
                 <ReviewsSection
                   reviews={reviews}
                   guestRating={hotel.guestRating}
+                  reviewCount={hotel.reviewCount}
                 />
               </div>
             </section>

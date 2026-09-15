@@ -33,7 +33,7 @@ export function BookingCard({ booking }: { booking: Booking }) {
       {isLoading ? (
         <Skeleton className="h-40 w-full sm:h-auto sm:w-48" />
       ) : (
-        <img src={hotel?.images[0]?.url} alt={hotel?.name} className="h-40 w-full object-cover sm:h-auto sm:w-48" />
+        <img src={hotel?.images[0]?.url} alt={hotel?.name} loading="lazy" decoding="async" className="h-40 w-full object-cover sm:h-auto sm:w-48" />
       )}
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-start justify-between gap-2">

@@ -3,6 +3,7 @@ import { HeartOff } from 'lucide-react'
 import { useFavorites } from '@/hooks/useFavorites'
 import { useHotelsByIds } from '@/hooks/useCatalog'
 import { HotelCard } from '@/components/hotel/HotelCard'
+import { HotelCardSkeleton } from '@/components/hotel/HotelCardSkeleton'
 import { FadeIn } from '@/components/common/FadeIn'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -26,7 +27,13 @@ export function Favorites() {
         <h1 className="text-2xl font-bold text-neutral-900">علاقه‌مندی‌های من</h1>
       </FadeIn>
 
-      {combinedLoading && <p className="mt-6 text-sm text-neutral-600">در حال بارگذاری...</p>}
+      {combinedLoading && (
+        <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <HotelCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
 
       {combinedError && !combinedLoading && (
         <div className="mt-6">

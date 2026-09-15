@@ -29,6 +29,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false); // دراور موبایل
   const menuRef = useRef<HTMLDivElement>(null);
   const drawerCloseRef = useRef<HTMLButtonElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -54,8 +55,13 @@ export function Navbar() {
       if (e.key === "Escape") setMobileOpen(false);
     }
     drawerCloseRef.current?.focus();
+    const openButton = menuButtonRef.current;
     document.addEventListener("keydown", onDrawerKeyDown);
-    return () => document.removeEventListener("keydown", onDrawerKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onDrawerKeyDown);
+      // هنگام بسته شدن، فوکوس به دکمه بازکنندهٔ منو برگردد
+      openButton?.focus();
+    };
   }, [mobileOpen]);
 
   function handleLogout() {
@@ -85,7 +91,7 @@ export function Navbar() {
           </Link>
 
           {/* لینکهای دسکتاپ — آیکونی */}
-          <nav className="hidden items-center gap-1 md:flex">
+          <div className="hidden items-center gap-1 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
@@ -101,7 +107,7 @@ export function Navbar() {
                 <link.icon className="h-icon-sm w-icon-sm" aria-hidden />
               </Link>
             ))}
-          </nav>
+          </div>
 
           {/* اکشنها — دسکتاپ */}
           <div className="hidden items-center gap-3 md:flex">
@@ -140,7 +146,7 @@ export function Navbar() {
                     className="absolute inset-e-0 top-full z-10 mt-2 w-52 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-elevated"
                   >
                     <div className="border-b border-neutral-100 px-4 py-3">
-                      <p className="text-sm font-semibold text-neutral-900">
+                      <p className="max-w-44 truncate text-sm font-semibold text-neutral-900">
                         {user.firstName} {user.lastName}
                       </p>
                       <p className="text-xs text-neutral-500">حساب کاربری</p>
@@ -185,6 +191,7 @@ export function Navbar() {
 
           {/* دکمه منو — موبایل */}
           <button
+            ref={menuButtonRef}
             onClick={() => setMobileOpen(true)}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-700 transition-colors hover:border-primary-300 md:hidden"
             aria-label="باز کردن منو"
@@ -268,7 +275,7 @@ export function Navbar() {
 
             {user ? (
               <>
-                <p className="px-3 pb-1 text-xs text-neutral-500">
+                <p className="max-w-64 truncate px-3 pb-1 text-xs text-neutral-500">
                   {user.firstName} {user.lastName}
                 </p>
                 <Link

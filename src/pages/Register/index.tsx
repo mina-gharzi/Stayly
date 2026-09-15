@@ -88,6 +88,7 @@ export function Register() {
                     id="firstName"
                     type="text"
                     placeholder="علی"
+                    autoComplete="given-name"
                     aria-invalid={!!errors.firstName}
                     aria-describedby={
                       errors.firstName ? "firstName-error" : undefined
@@ -125,6 +126,7 @@ export function Register() {
                     id="lastName"
                     type="text"
                     placeholder="احمدی"
+                    autoComplete="family-name"
                     aria-invalid={!!errors.lastName}
                     aria-describedby={
                       errors.lastName ? "lastName-error" : undefined
@@ -165,6 +167,7 @@ export function Register() {
                   type="email"
                   dir="ltr"
                   placeholder="email@example.com"
+                  autoComplete="email"
                   aria-invalid={!!errors.email}
                   aria-describedby={
                     errors.email ? "reg-email-error" : undefined
@@ -204,6 +207,7 @@ export function Register() {
                   type="tel"
                   dir="ltr"
                   placeholder="+98 912 123 4567"
+                  autoComplete="tel"
                   aria-invalid={!!errors.phone}
                   aria-describedby={errors.phone ? "phone-error" : undefined}
                   className={cn(
@@ -241,6 +245,7 @@ export function Register() {
                   type={showPassword ? "text" : "password"}
                   dir="ltr"
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   aria-invalid={!!errors.password}
                   aria-describedby={
                     errors.password ? "reg-password-error" : undefined
@@ -292,6 +297,7 @@ export function Register() {
                   type={showConfirmPassword ? "text" : "password"}
                   dir="ltr"
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   aria-invalid={!!errors.confirmPassword}
                   aria-describedby={
                     errors.confirmPassword ? "confirmPassword-error" : undefined

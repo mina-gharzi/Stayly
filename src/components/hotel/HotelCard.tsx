@@ -7,14 +7,8 @@ import { Card } from "@/components/ui/Card";
 import { formatToman } from "@/utils/currency";
 import { amenityIconMap } from "@/utils/amenityIcons";
 import { propertyTypeMeta } from "@/utils/propertyTypes";
+import { ratingLabel } from "@/utils/ratings";
 import { FavoriteButton } from "./FavoriteButton";
-
-function ratingLabel(score: number) {
-  if (score >= 9) return "عالی";
-  if (score >= 8) return "خیلی خوب";
-  if (score >= 7) return "خوب";
-  return "قابل قبول";
-}
 
 export function HotelCard({
   hotel,
@@ -124,7 +118,7 @@ export function HotelCard({
             <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-neutral-100 pt-4">
               <div>
                 <p className="text-[11px] text-neutral-500">
-                  شروع از {hotel.reviewCount.toLocaleString("fa-IR")} نظر
+                  {hotel.reviewCount.toLocaleString("fa-IR")} نظر مهمان
                 </p>
                 <p className="mt-0.5 text-xl font-bold text-neutral-900">
                   <span className="tabular-price">

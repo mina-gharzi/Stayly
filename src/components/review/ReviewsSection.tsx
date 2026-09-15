@@ -5,7 +5,17 @@ import { RatingDistribution } from './RatingDistribution'
 import { ReviewCard } from './ReviewCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 
-export function ReviewsSection({ reviews, guestRating }: { reviews: Review[]; guestRating: number }) {
+export function ReviewsSection({
+  reviews,
+  guestRating,
+  reviewCount,
+}: {
+  reviews: Review[];
+  guestRating: number;
+  reviewCount?: number;
+}) {
+  const total = reviewCount ?? reviews.length;
+
   return (
     <div>
       <div className="flex items-center gap-4">
@@ -15,7 +25,11 @@ export function ReviewsSection({ reviews, guestRating }: { reviews: Review[]; gu
         </div>
         <div>
           <p className="font-semibold text-neutral-900">امتیاز مهمانان</p>
-          <p className="text-sm text-neutral-600">{reviews.length} نظر</p>
+          <p className="text-sm text-neutral-600">
+            {total > reviews.length
+              ? `${reviews.length.toLocaleString("fa-IR")} از ${total.toLocaleString("fa-IR")} نظر`
+              : `${total.toLocaleString("fa-IR")} نظر`}
+          </p>
         </div>
       </div>
 

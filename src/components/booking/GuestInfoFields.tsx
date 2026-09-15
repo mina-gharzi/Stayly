@@ -28,6 +28,7 @@ export function GuestInfoFields({ register, errors }: GuestInfoFieldsProps) {
               id="firstName"
               type="text"
               placeholder="نام"
+              autoComplete="given-name"
               aria-invalid={!!errors.firstName}
               aria-describedby={errors.firstName ? "firstName-error" : undefined}
               className={cn(pillInput, errors.firstName && "border-error-500 focus:border-error-500 focus:ring-error-500/10")}
@@ -47,6 +48,7 @@ export function GuestInfoFields({ register, errors }: GuestInfoFieldsProps) {
               id="lastName"
               type="text"
               placeholder="نام خانوادگی"
+              autoComplete="family-name"
               aria-invalid={!!errors.lastName}
               aria-describedby={errors.lastName ? "lastName-error" : undefined}
               className={cn(pillInput, errors.lastName && "border-error-500 focus:border-error-500 focus:ring-error-500/10")}
@@ -68,6 +70,7 @@ export function GuestInfoFields({ register, errors }: GuestInfoFieldsProps) {
             type="email"
             dir="ltr"
             placeholder="email@example.com"
+            autoComplete="email"
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "email-error" : undefined}
             className={cn(pillInput, errors.email && "border-error-500 focus:border-error-500 focus:ring-error-500/10")}
@@ -85,9 +88,10 @@ export function GuestInfoFields({ register, errors }: GuestInfoFieldsProps) {
           </div>
           <input
             id="phone"
-            type="text"
+            type="tel"
             dir="ltr"
             placeholder="09123456789"
+            autoComplete="tel"
             aria-invalid={!!errors.phone}
             aria-describedby={errors.phone ? "phone-error" : undefined}
             className={cn(pillInput, errors.phone && "border-error-500 focus:border-error-500 focus:ring-error-500/10")}

@@ -44,14 +44,16 @@ export function BookingSummaryCard({
         <img
           src={hotel.images[0]?.url}
           alt={hotel.name}
+          loading="lazy"
+          decoding="async"
           className="h-36 w-full object-cover sm:h-40"
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
         <div className="absolute bottom-3 right-3 left-3">
-          <p className="font-display text-base font-bold text-white">
+          <p className="truncate font-display text-base font-bold text-white">
             {hotel.name}
           </p>
-          <p className="text-sm text-white/80">{room.name}</p>
+          <p className="truncate text-sm text-white/80">{room.name}</p>
         </div>
       </div>
 

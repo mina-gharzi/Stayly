@@ -13,6 +13,7 @@ import { FadeIn } from "@/components/common/FadeIn";
 import { getCities, getCityById, getAmenities } from "@/services/catalog";
 import { propertyTypeMeta } from "@/utils/propertyTypes";
 import { formatToman } from "@/utils/currency";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export function Hotels() {
   const { filters, updateParams, data, isLoading, isError, refetch } =
@@ -24,6 +25,10 @@ export function Hotels() {
       : filters.destination?.length
         ? `${filters.destination.length} مقصد`
         : "همه مقصدها";
+
+  usePageTitle(
+    filters.destination?.length ? `${destinationLabel} | هتلها` : undefined
+  );
 
   /* ── چیپ‌های فیلترهای فعال ── */
   const chips: { key: string; label: string; remove: () => void }[] = [];

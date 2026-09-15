@@ -46,8 +46,17 @@ const About = lazy(() =>
 const Contact = lazy(() =>
   import("@/pages/Contact").then((m) => ({ default: m.Contact })),
 );
+const NotFound = lazy(() =>
+  import("@/pages/NotFound").then((m) => ({ default: m.NotFound })),
+);
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+    },
+  },
+});
 
 function PageLoading() {
   return (
@@ -88,6 +97,8 @@ export default function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/favorites" element={<Favorites />} />
               </Route>
+
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </Suspense>

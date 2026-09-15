@@ -196,6 +196,7 @@ export function Contact() {
                         id="contact-name"
                         type="text"
                         placeholder="نام کامل"
+                        autoComplete="name"
                         aria-invalid={!!errors.name}
                         aria-describedby={errors.name ? "contact-name-error" : undefined}
                         className={cn(
@@ -233,6 +234,7 @@ export function Contact() {
                         type="email"
                         dir="ltr"
                         placeholder="email@example.com"
+                        autoComplete="email"
                         aria-invalid={!!errors.email}
                         aria-describedby={errors.email ? "contact-email-error" : undefined}
                         className={cn(

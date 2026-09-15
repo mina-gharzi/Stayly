@@ -198,6 +198,8 @@ export function BookingDetails() {
             <img
               src={hotel.images[0].url}
               alt={hotel.name}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
@@ -290,6 +292,7 @@ export function BookingDetails() {
                 label="ایمیل"
                 value={booking.guestInfo.email}
                 ltr
+                wrapBreak
               />
               <InfoBox
                 label="تلفن"
@@ -465,20 +468,23 @@ function InfoBox({
   label,
   value,
   ltr = false,
+  wrapBreak = false,
 }: {
   label: string;
   value: string;
   ltr?: boolean;
+  wrapBreak?: boolean;
 }) {
   return (
-    <div className="rounded-xl bg-neutral-50 px-3.5 py-2.5">
+    <div className="min-w-0 rounded-xl bg-neutral-50 px-3.5 py-2.5">
       <p className="text-[10px] uppercase tracking-wider text-neutral-400">
         {label}
       </p>
       <p
         className={cn(
           "mt-0.5 text-sm font-medium text-neutral-800",
-          ltr && "ltr-content"
+          ltr && "ltr-content",
+          wrapBreak && "[overflow-wrap:anywhere]"
         )}
       >
         {value}

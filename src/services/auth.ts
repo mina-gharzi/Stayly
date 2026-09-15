@@ -2,6 +2,7 @@
 import type { User } from '@/types'
 import { users as demoUsers } from '../data/users'
 import { hashMock } from '@/utils/hashMock'
+import { safeJsonParse } from '@/utils/safeJson'
 
 const REGISTERED_KEY = 'stayly-registered-users'
 const DEMO_PASSWORD = '123456' // رمز عبور مشترک همه کاربران نمونه (Mock)
@@ -16,7 +17,7 @@ interface AuthResult {
 }
 
 function getRegisteredUsers(): RegisteredUser[] {
-  return JSON.parse(localStorage.getItem(REGISTERED_KEY) ?? '[]')
+  return safeJsonParse(localStorage.getItem(REGISTERED_KEY), [])
 }
 
 function saveRegisteredUsers(list: RegisteredUser[]) {

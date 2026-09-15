@@ -1,5 +1,6 @@
 // src/services/favorites.ts
 import { favorites as demoFavorites } from "../data/favorites";
+import { safeJsonParse } from "@/utils/safeJson";
 
 function storageKey(userId: string) {
   return `stayly-favorites:${userId}`;
@@ -7,7 +8,7 @@ function storageKey(userId: string) {
 
 function getFavoriteIds(userId: string): string[] {
   const raw = localStorage.getItem(storageKey(userId));
-  if (raw) return JSON.parse(raw);
+  if (raw) return safeJsonParse(raw, []);
   const seeded = demoFavorites
     .filter((f) => f.userId === userId)
     .map((f) => f.hotelId);

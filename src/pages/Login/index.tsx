@@ -89,6 +89,7 @@ export function Login() {
                   type="email"
                   dir="ltr"
                   placeholder="email@example.com"
+                  autoComplete="email"
                   aria-invalid={!!errors.email}
                   aria-describedby={errors.email ? "email-error" : undefined}
                   className={cn(
@@ -126,6 +127,7 @@ export function Login() {
                   type={showPassword ? "text" : "password"}
                   dir="ltr"
                   placeholder="••••••••"
+                  autoComplete="current-password"
                   aria-invalid={!!errors.password}
                   aria-describedby={
                     errors.password ? "password-error" : undefined

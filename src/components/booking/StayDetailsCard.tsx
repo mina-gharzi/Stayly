@@ -25,6 +25,12 @@ export function StayDetailsCard({
   guestValue,
   onGuestChange,
 }: StayDetailsCardProps) {
+  // روز گذشته برای تاریخ‌های غیرقابل انتخاب
+  const minCheckIn = new Date().toISOString().slice(0, 10);
+  const minCheckOut = checkIn
+    ? new Date(new Date(checkIn).getTime() + 86400000).toISOString().slice(0, 10)
+    : minCheckIn;
+
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white shadow-card">
       <div className="flex items-center gap-3 border-b border-neutral-100 bg-neutral-50/50 px-5 py-4 sm:px-6">
@@ -48,6 +54,7 @@ export function StayDetailsCard({
               <input
                 type="date"
                 value={checkIn}
+                min={minCheckIn}
                 onChange={(e) => onCheckInChange(e.target.value)}
                 className={cn(pillInput, "ltr-content")}
               />
@@ -63,6 +70,7 @@ export function StayDetailsCard({
               <input
                 type="date"
                 value={checkOut}
+                min={minCheckOut}
                 onChange={(e) => onCheckOutChange(e.target.value)}
                 className={cn(pillInput, "ltr-content")}
               />

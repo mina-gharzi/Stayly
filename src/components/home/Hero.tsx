@@ -1,9 +1,11 @@
 // src/components/home/Hero.tsx
 import heroImage from "@/assets/hero.webp";
+import { getCities } from "@/services/catalog";
 import { SearchBox } from "./SearchBox";
 import { FadeIn } from "@/components/common/FadeIn";
 
 export function Hero() {
+  const destinationCount = getCities().length;
   return (
     <section className="relative overflow-hidden">
       {/* ── پس‌زمینه + overlay ملایم ── */}
@@ -20,7 +22,7 @@ export function Hero() {
           <div className="mx-auto max-w-3xl">
             <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-medium text-white/80 backdrop-blur-md sm:text-sm">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success-500" />
-              اقامتگاه‌های منتخب در ۵ مقصد محبوب
+              اقامتگاه‌های منتخب در {destinationCount.toLocaleString("fa-IR")} مقصد محبوب
             </p>
 
             <h1 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">

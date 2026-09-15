@@ -98,6 +98,7 @@ function FullscreenModal({
         <img
           src={images[idx].url}
           alt={images[idx].alt}
+          decoding="async"
           className="max-h-[85vh] max-w-[90vw] rounded-xl object-contain"
         />
       </div>
@@ -146,7 +147,7 @@ export function ImageGallery({ images }: { images: HotelImage[] }) {
       const img = new Image();
       img.src = images[i].url;
     });
-  }, [active, images.length]);
+  }, [active, images]);
 
   useEffect(() => {
     const el = thumbsRef.current;
@@ -180,6 +181,7 @@ export function ImageGallery({ images }: { images: HotelImage[] }) {
           <img
             src={images[active].url}
             alt={images[active].alt}
+            decoding="async"
             className="h-full w-full object-contain"
           />
           <span className="absolute inset-e-3 top-3 rounded-full bg-neutral-900/50 px-2.5 py-1 text-xs text-white backdrop-blur-sm">
@@ -232,6 +234,7 @@ export function ImageGallery({ images }: { images: HotelImage[] }) {
           <img
             src={images[active].url}
             alt={images[active].alt}
+            decoding="async"
             className="h-full w-full object-cover"
           />
           <div className="pointer-events-none absolute inset-0 bg-black/30" />

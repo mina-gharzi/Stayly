@@ -10,6 +10,8 @@ export function ReviewCard({ review }: { review: Review }) {
         <img
           src={review.userAvatar}
           alt={review.userName}
+          loading="lazy"
+          decoding="async"
           className="h-10 w-10 rounded-full object-cover ring-2 ring-white"
         />
 

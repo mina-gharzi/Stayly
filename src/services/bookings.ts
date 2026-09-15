@@ -3,7 +3,8 @@ import type { Booking, BookingStatus } from '@/types'
 import { bookings as demoBookings } from '../data/bookings'
 import { getRoomByIdSync, reserveRoomAvailability, releaseRoomAvailability } from './rooms'
 import { createCancellation } from './cancellations'
-import { isValidDateRange, exceedsGuestCapacity, exceedsRoomAvailability, getGuestCapacity } from '@/utils/bookingRules'
+import { isValidDateRange, isDateInPast, exceedsGuestCapacity, exceedsRoomAvailability, getGuestCapacity } from '@/utils/bookingRules'
+import { safeJsonParse } from '@/utils/safeJson'
 
 const CREATED_KEY = 'stayly-created-bookings'
 const OVERRIDES_KEY = 'stayly-booking-status-overrides'
@@ -32,11 +33,11 @@ function generateBookingId(): string {
 }
 
 function getCreated(): Booking[] {
-  return JSON.parse(localStorage.getItem(CREATED_KEY) ?? '[]')
+  return safeJsonParse(localStorage.getItem(CREATED_KEY), [])
 }
 
 function getOverrides(): Record<string, Booking['status']> {
-  return JSON.parse(localStorage.getItem(OVERRIDES_KEY) ?? '{}')
+  return safeJsonParse(localStorage.getItem(OVERRIDES_KEY), {})
 }
 
 function applyOverride(booking: Booking): Booking {
@@ -59,6 +60,9 @@ function validateBookingRequest(booking: Omit<Booking, 'id' | 'createdAt'>): voi
   }
   if (!isValidDateRange(booking.checkIn, booking.checkOut)) {
     throw new BookingValidationError('تاریخ خروج باید بعد از تاریخ ورود باشد.')
+  }
+  if (isDateInPast(booking.checkIn)) {
+    throw new BookingValidationError('تاریخ ورود باید امروز یا در آینده باشد.')
   }
 
   const room = getRoomByIdSync(booking.roomTypeId)

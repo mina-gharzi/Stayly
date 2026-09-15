@@ -13,42 +13,55 @@ export function Pagination({ page, totalPages, onChange }: PaginationProps) {
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
 
+  const navBtn =
+    'flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-card transition-all duration-200 hover:border-primary-300 hover:text-primary-700 disabled:pointer-events-none disabled:opacity-40'
+
   return (
     <nav
-      className="flex max-w-full flex-wrap items-center justify-center gap-2"
+      className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
       aria-label="صفحه‌بندی"
     >
-      <button
-        onClick={() => onChange(page - 1)}
-        disabled={page === 1}
-        aria-label="صفحه قبل"
-        className="flex h-9 w-9 items-center justify-center rounded-md border border-neutral-200 disabled:opacity-40"
-      >
-        <ChevronRight className="h-4 w-4" aria-hidden />
-      </button>
-
-      {pages.map((p) => (
+      <div className="flex items-center gap-2">
         <button
-          key={p}
-          onClick={() => onChange(p)}
-          aria-current={p === page ? 'page' : undefined}
-          className={cn(
-            'flex h-9 w-9 items-center justify-center rounded-md text-sm tabular-nums',
-            p === page ? 'bg-primary-700 text-white' : 'text-neutral-700 hover:bg-neutral-100'
-          )}
+          onClick={() => onChange(page - 1)}
+          disabled={page === 1}
+          aria-label="صفحه قبل"
+          className={navBtn}
         >
-          {p}
+          <ChevronRight className="h-4 w-4" aria-hidden />
         </button>
-      ))}
 
-      <button
-        onClick={() => onChange(page + 1)}
-        disabled={page === totalPages}
-        aria-label="صفحه بعد"
-        className="flex h-9 w-9 items-center justify-center rounded-md border border-neutral-200 disabled:opacity-40"
-      >
-        <ChevronLeft className="h-4 w-4" aria-hidden />
-      </button>
+        <div className="flex items-center gap-1.5">
+          {pages.map((p) => (
+            <button
+              key={p}
+              onClick={() => onChange(p)}
+              aria-current={p === page ? 'page' : undefined}
+              className={cn(
+                'flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold tabular-nums transition-all duration-200',
+                p === page
+                  ? 'bg-primary-600 text-white shadow-float'
+                  : 'text-neutral-600 hover:bg-neutral-100 hover:text-primary-700',
+              )}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={() => onChange(page + 1)}
+          disabled={page === totalPages}
+          aria-label="صفحه بعد"
+          className={navBtn}
+        >
+          <ChevronLeft className="h-4 w-4" aria-hidden />
+        </button>
+      </div>
+      <p className="text-xs text-neutral-500">
+        صفحه <span className="font-semibold text-neutral-700">{page}</span> از{" "}
+        <span className="font-semibold text-neutral-700">{totalPages}</span>
+      </p>
     </nav>
-  )
+  );
 }

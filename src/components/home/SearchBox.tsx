@@ -99,7 +99,7 @@ function DestinationSelect({
         <div
           id={panelId}
           role="listbox"
-          className="absolute start-0 top-full z-50 mt-2 w-72 max-w-[85vw] overflow-hidden rounded-2xl border border-neutral-200 bg-white p-2 shadow-elevated"
+          className="absolute inset-s-0 top-full z-50 mt-2 w-72 max-w-[85vw] overflow-hidden rounded-2xl border border-neutral-200 bg-white p-2 shadow-elevated"
         >
           <p className="px-3 pb-1.5 pt-1 text-xs font-medium text-neutral-500">
             انتخاب مقصد

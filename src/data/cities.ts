@@ -6,7 +6,7 @@ export const cities: City[] = [
     id: 'baku',
     name: 'Baku',
     country: 'Azerbaijan',
-    image: 'https://images.unsplash.com/photo-1601275256050-e4c78e5a5f61?w=800',
+    image: 'https://images.pexels.com/photos/33971100/pexels-photo-33971100.jpeg?auto=compress&cs=tinysrgb&w=1200',
   },
   {
     id: 'istanbul',

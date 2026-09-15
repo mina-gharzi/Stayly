@@ -63,7 +63,7 @@ export function WhyStayly() {
     <section className="relative overflow-hidden bg-white">
       {/* ── الگوی نقطه‌ای دکوراتیو ── */}
       <div
-        className="pointer-events-none absolute inset-0 pattern-dots opacity-[var(--opacity-deco-light)]"
+        className="pointer-events-none absolute inset-0 pattern-dots opacity-(--opacity-deco-light)"
         aria-hidden
       />
 
@@ -71,10 +71,10 @@ export function WhyStayly() {
         {/* ── هدر سکشن ── */}
         <FadeIn>
           <div className="text-center">
-            <p className="font-mono text-[11px] font-medium uppercase tracking-[var(--tracking-wide)] text-primary-600">
+            <p className="font-mono text-[11px] font-medium uppercase tracking-(--tracking-wide) text-primary-600">
               Why Stayly
             </p>
-            <h2 className="mt-3 text-[20px] font-[700] text-neutral-900 sm:text-[24px]">
+            <h2 className="mt-3 text-[20px] font-bold text-neutral-900 sm:text-[24px]">
               چرا{" "}
               <span className="text-primary-700">پلتفرم ما</span> ؟
             </h2>
@@ -86,8 +86,8 @@ export function WhyStayly() {
 
         {/* ── پنل آمار ── */}
         <FadeIn delay={100}>
-          <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-[1px] overflow-hidden rounded-[20px] border border-neutral-200 bg-neutral-200 sm:mt-12">
-            {statItems.map((stat, i) => (
+          <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-px overflow-hidden rounded-[20px] border border-neutral-200 bg-neutral-200 sm:mt-12">
+            {statItems.map((stat) => (
               <div
                 key={stat.key}
                 className="flex flex-col items-center gap-1 bg-white px-4 py-5 sm:px-8 sm:py-6"
@@ -95,7 +95,7 @@ export function WhyStayly() {
                 {isLoading ? (
                   <div className="h-6 w-16 animate-pulse rounded-md bg-neutral-100" />
                 ) : (
-                  <p className="text-[20px] font-[800] tabular-nums text-neutral-900 sm:text-[24px]">
+                  <p className="text-[20px] font-extrabold tabular-nums text-neutral-900 sm:text-[24px]">
                     <AnimatedCounter value={data?.[stat.key] ?? 0} />+
                   </p>
                 )}
@@ -110,16 +110,16 @@ export function WhyStayly() {
         {/* ── کارت‌های ویژگی ── */}
         <div className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-3 sm:mt-12 sm:grid-cols-4 sm:gap-4">
           {features.map((f, i) => (
-            <FadeIn key={f.title} delay={150 + i * 80} direction="up">
-              <div className="group relative flex flex-col items-center gap-3 rounded-[20px] border border-neutral-100 bg-white p-5 text-center shadow-[var(--shadow-card)] transition-all duration-[300ms] ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)] sm:p-6">
+            <FadeIn key={f.title} delay={150} direction="up">
+              <div className="group relative flex flex-col items-center gap-3 rounded-[20px] border border-neutral-100 bg-white p-5 text-center shadow-sm transition-all duration-300 ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-1 hover:shadow-(--shadow-elevated) sm:p-6">
                 {/* شماره ویژگی */}
-                <span className="absolute left-3 top-3 text-[10px] font-medium text-neutral-200 transition-colors duration-[200ms] group-hover:text-primary-300">
+                <span className="absolute left-3 top-3 text-[10px] font-medium text-neutral-200 transition-colors duration-200 group-hover:text-primary-300">
                   0{i + 1}
                 </span>
 
                 {/* ظرف آیکن */}
                 <div className="relative">
-                  <span className="flex h-[48px] w-[48px] items-center justify-center rounded-[14px] bg-primary-50 transition-all duration-[300ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-105 group-hover:bg-primary-100">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-primary-50 transition-all duration-300 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-105 group-hover:bg-primary-100">
                     <f.icon
                       className="h-5 w-5 text-primary-700"
                       strokeWidth={1.75}
@@ -130,7 +130,7 @@ export function WhyStayly() {
 
                 {/* متن */}
                 <div className="space-y-1">
-                  <p className="text-[14px] font-[700] text-neutral-900">
+                  <p className="text-[14px] font-bold text-neutral-900">
                     {f.title}
                   </p>
                   <p className="text-[11px] leading-relaxed text-neutral-400">
@@ -140,7 +140,7 @@ export function WhyStayly() {
 
                 {/* خط تزئینی پایین */}
                 <div className="absolute inset-x-5 bottom-0 h-px sm:inset-x-6">
-                  <div className="h-full origin-right scale-x-0 bg-primary-400 transition-transform duration-[500ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:origin-left group-hover:scale-x-100" />
+                  <div className="h-full origin-right scale-x-0 bg-primary-400 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:origin-left group-hover:scale-x-100" />
                 </div>
               </div>
             </FadeIn>
@@ -150,11 +150,11 @@ export function WhyStayly() {
         {/* ── خط جداکننده ── */}
         <FadeIn delay={500}>
           <div className="mx-auto mt-12 flex items-center gap-4 sm:mt-16">
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-neutral-200" />
+            <div className="h-px flex-1 bg-linear-to-l from-transparent to-neutral-200" />
             <span className="text-[11px] font-medium text-neutral-300">
               مورد اعتماد هزاران مسافر
             </span>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-neutral-200" />
+            <div className="h-px flex-1 bg-linear-to-r from-transparent to-neutral-200" />
           </div>
         </FadeIn>
       </div>

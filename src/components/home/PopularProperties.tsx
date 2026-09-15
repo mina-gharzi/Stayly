@@ -1,34 +1,14 @@
 // src/components/home/PopularProperties.tsx
 import { Link } from "react-router-dom";
-import {
-  Building2,
-  Palmtree,
-  Home as HomeIcon,
-  Warehouse,
-  BedSingle,
-  Sparkles,
-  ArrowLeft,
-} from "lucide-react";
+import { Building2, ArrowLeft } from "lucide-react";
 import { useHotelCountsByType } from "@/hooks/useCatalog";
 import { FadeIn } from "@/components/common/FadeIn";
+import { propertyTypeMeta } from "@/utils/propertyTypes";
 import type { PropertyType } from "@/types";
-import type { LucideIcon } from "lucide-react";
-
-const propertyTypeConfig: Record<
-  PropertyType,
-  { label: string; icon: LucideIcon; iconBg: string; color: string; ringColor: string }
-> = {
-  hotel:     { label: "هتل",       icon: Building2,  color: "text-primary-600 group-hover:bg-primary-600 group-hover:text-white",   ringColor: "group-hover:ring-primary-300/40",   iconBg: "bg-primary-50" },
-  resort:    { label: "استراحتگاه", icon: Palmtree,   color: "text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white",  ringColor: "group-hover:ring-emerald-300/40",  iconBg: "bg-emerald-50" },
-  apartment: { label: "آپارتمان",  icon: HomeIcon,   color: "text-amber-600 group-hover:bg-amber-600 group-hover:text-white",     ringColor: "group-hover:ring-amber-300/40",    iconBg: "bg-amber-50" },
-  villa:     { label: "ویلا",      icon: Warehouse,  color: "text-sky-600 group-hover:bg-sky-600 group-hover:text-white",        ringColor: "group-hover:ring-sky-300/40",      iconBg: "bg-sky-50" },
-  hostel:    { label: "هاستل",     icon: BedSingle,  color: "text-violet-600 group-hover:bg-violet-600 group-hover:text-white",   ringColor: "group-hover:ring-violet-300/40",   iconBg: "bg-violet-50" },
-  boutique:  { label: "بوتیک",     icon: Sparkles,   color: "text-rose-600 group-hover:bg-rose-600 group-hover:text-white",      ringColor: "group-hover:ring-rose-300/40",     iconBg: "bg-rose-50" },
-};
 
 export function PopularProperties() {
   const { data: counts } = useHotelCountsByType();
-  const types = Object.keys(propertyTypeConfig) as PropertyType[];
+  const types = Object.keys(propertyTypeMeta) as PropertyType[];
 
   return (
     <section className="relative overflow-hidden bg-neutral-100/60">
@@ -60,7 +40,7 @@ export function PopularProperties() {
         {/* ── گرید آیتم‌ها ── */}
         <div className="mt-10 grid grid-cols-2 gap-3 sm:mt-14 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
           {types.map((type, index) => {
-            const config = propertyTypeConfig[type];
+            const config = propertyTypeMeta[type];
             const count = counts?.[type] ?? 0;
             const Icon = config.icon;
 
@@ -71,11 +51,13 @@ export function PopularProperties() {
                   className="group relative flex flex-col items-center gap-4 overflow-hidden rounded-2xl border border-neutral-200/70 bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-neutral-300 hover:shadow-elevated"
                 >
                   {/* حباب آیکون */}
-                  <span className={`relative flex h-16 w-16 items-center justify-center rounded-2xl ${config.iconBg} transition-all duration-500 group-hover:scale-110 ${config.color} group-hover:shadow-float`}>
+                  <span
+                    className={`relative flex h-16 w-16 items-center justify-center rounded-2xl ${config.iconBg} transition-all duration-500 group-hover:scale-110 ${config.text} ${config.hoverBg} group-hover:shadow-float`}
+                  >
                     <Icon className="h-7 w-7 transition-transform duration-500 group-hover:rotate-6" aria-hidden />
                     {/* حلقه شعاع هنگام hover */}
                     <span
-                      className={`pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-transparent transition-all duration-500 ${config.ringColor}`}
+                      className={`pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-transparent transition-all duration-500 ${config.ring}`}
                       aria-hidden
                     />
                   </span>

@@ -28,8 +28,14 @@ export class BookingAccessError extends Error {
   }
 }
 
+// شناسه‌ی رزرو به‌شکل STY-12345؛ فقط ۹۰ هزار مقدار ممکنه، پس برخورد با رزروهای
+// موجود (ساخته‌شده یا دمو) رو چک می‌کنیم تا دو رزرو هیچ‌وقت یک id نگیرن.
 function generateBookingId(): string {
-  return `STY-${Math.floor(10000 + Math.random() * 90000)}`
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const id = `STY-${Math.floor(10000 + Math.random() * 90000)}`
+    if (!getBookingSync(id)) return id
+  }
+  return `STY-${crypto.randomUUID().slice(0, 8).toUpperCase()}`
 }
 
 function getCreated(): Booking[] {

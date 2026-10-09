@@ -27,6 +27,15 @@ function flushAll() {
   ])
 }
 
+// تاریخ‌ها نسبت به «امروز» ساخته می‌شن؛ با تاریخ ثابت، بعد از رسیدن آن روز
+// سرویس درست‌ترین رفتار (رد کردن «ورود در گذشته») تست را می‌شکست.
+function isoDaysFromToday(days: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() + days)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
 const guestInfo: GuestInfo = {
   firstName: 'علی',
   lastName: 'محمدی',
@@ -51,8 +60,8 @@ function validInput(overrides: Partial<SubmitBookingPaymentInput> = {}): SubmitB
     userId: 'user-1',
     hotelId: 'baku-fairmont',
     roomTypeId: 'baku-fairmont-deluxe',
-    checkIn: '2026-10-10',
-    checkOut: '2026-10-13',
+    checkIn: isoDaysFromToday(30),
+    checkOut: isoDaysFromToday(33),
     adults: 2,
     children: 0,
     rooms: 1,
